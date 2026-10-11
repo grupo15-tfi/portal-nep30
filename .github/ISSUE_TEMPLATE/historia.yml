@@ -1,0 +1,65 @@
+name: Historia de usuario
+description: Una historia del backlog (HU01–HU18), para trabajarla en un sprint.
+title: "HUxx – Título de la historia"
+labels: ["historia"]
+body:
+  - type: input
+    id: hu
+    attributes:
+      label: Historia y requerimientos
+      description: Número de historia y RF que cubre (ver el plan de trabajo).
+      placeholder: "HU05 · RF10, RF11"
+    validations:
+      required: true
+  - type: textarea
+    id: historia
+    attributes:
+      label: Historia
+      value: "Como [rol] quiero [acción] para [beneficio]."
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Uno por línea. La historia se cierra cuando se cumplen todos.
+      value: |
+        - [ ] 
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: tareas
+    attributes:
+      label: Tareas
+      value: |
+        - [ ] 
+        - [ ] 
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: Prioridad
+      options: ["Alta", "Media", "Baja"]
+    validations:
+      required: true
+  - type: input
+    id: rama
+    attributes:
+      label: Rama
+      description: "Una por historia. Si la comparten back y front: -back / -front."
+      placeholder: "feature/HU05-login"
+  - type: input
+    id: trello
+    attributes:
+      label: Tarjeta de Trello
+      placeholder: "https://trello.com/c/..."
+  - type: checkboxes
+    id: terminado
+    attributes:
+      label: Definición de terminado
+      options:
+        - label: Funciona y cumple todos los criterios de aceptación
+        - label: Tiene pruebas (PHPUnit) y pasan
+        - label: Está integrada en develop con un pull request revisado por otro integrante
+        - label: Tiene documentación mínima y la tarjeta está en "Hecho"
