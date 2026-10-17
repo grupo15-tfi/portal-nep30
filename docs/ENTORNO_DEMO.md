@@ -142,7 +142,7 @@ sudo install -d -o azureuser -g www-data portal-nep30
 git clone https://github.com/grupo15-tfi/portal-nep30.git portal-nep30
 cd portal-nep30
 
-cp ~/servidor/env.produccion.ejemplo .env
+cp deploy/servidor/env.produccion.ejemplo .env   # el modelo del repo (APP_ENV=demo y ADMIN_*)
 nano .env                          # DOMINIO, clave de nep30_app, Brevo y ADMIN_* (APP_ENV=demo)
 
 composer install --no-dev --optimize-autoloader --no-interaction
