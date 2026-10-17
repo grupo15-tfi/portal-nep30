@@ -157,8 +157,12 @@ unset DB_USERNAME DB_PASSWORD
 php artisan storage:link
 chgrp -R www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache
 php artisan optimize
-sudo supervisorctl restart portal-nep30-worker:*
+sudo systemctl restart supervisor   # recién ahora existe storage/logs: Supervisor puede arrancar
+sudo supervisorctl status           # portal-nep30-worker_00 tiene que decir RUNNING
 ```
+
+> Antes del primer deploy es normal que `systemctl is-active supervisor` diga *activating*: el worker
+> guarda su log en `storage/logs`, que todavía no existe, y Supervisor reintenta hasta que aparezca.
 
 Desde ahí, **cada integración en `main` se publica sola** con `scripts/deploy.sh`.
 
