@@ -3,12 +3,12 @@ BASE DE DATOS v4.4 - Portal N.E.P. y F.P. N.º 30 - TFI Grupo 15
 Ajustada con la entrevista a la institución del 13/10/2026.
 
 ARCHIVOS
-  01_esquema.sql             34 tablas, restricciones CHECK, 38 triggers, 2 procedimientos y 7 vistas.
+  01_esquema.sql             34 tablas, restricciones CHECK, 39 triggers, 2 procedimientos y 7 vistas.
   02_seguridad.sql           usuarios de MySQL con privilegio mínimo (app, migraciones,
                              backup, lectura). Reemplazar las claves CAMBIAR_... antes de usarlo.
   03_datos_base.sql          4 roles y sus permisos (Spatie), secciones del sitio y catálogo
                              de cursos del folleto 2026 (9 de FP y 3 modalidades de primaria).
-  04_pruebas.sql             137 pruebas automáticas (SOLO en desarrollo: carga datos de ejemplo).
+  04_pruebas.sql             139 pruebas automáticas (SOLO en desarrollo: carga datos de ejemplo).
   05_prueba_privilegios.sh   20 pruebas de los permisos de cada usuario de MySQL.
   backup.sh                  copia de seguridad diaria para el cron del hosting.
   grupo15_DER_v4.4.png/.pdf/.drawio   diagrama entidad-relación.
@@ -26,16 +26,17 @@ QUÉ CAMBIÓ DESDE LA v4.3
   Nuevo      historial académico: vistas v_historial_academico y v_historial_resumen (PDF HU17).
   Nuevo      rol Auditor de solo lectura, también controlado por la base.
   Nuevo      días y horario de cada curso; observaciones de cada sede; v_resumen_sedes.
-  Nuevo      la auditoría registra también el alta de preinscripciones, los cambios de rol
+  Nuevo      la auditoría registra también el alta de preinscripciones, los cambios de rol,
+             las correcciones de asistencia (18/10)
              y las descargas (historial en PDF y planillas Excel).
 
 CÓMO PROBARLO EN LA PC (XAMPP, Laragon o MySQL Workbench)
   1. Ejecutar 01_esquema.sql
   2. Ejecutar 02_seguridad.sql (opcional en la PC)
   3. Ejecutar 03_datos_base.sql
-  4. Ejecutar 04_pruebas.sql  -> al final: total 137, ok 137, fallas 0
+  4. Ejecutar 04_pruebas.sql  -> al final: total 139, ok 139, fallas 0
   Para repetir desde cero: DROP DATABASE portal_nep30; y volver al paso 1.
-  Probado en MySQL 8.0.46 y en MariaDB 10.11: 137 de 137 en los dos.
+  Probado en MySQL 8.0.46 y en MariaDB 10.11: 139 de 139 en los dos.
 
 QUÉ PROTEGE LA BASE POR SÍ MISMA (aunque falle una validación de Laravel)
   - Cupo: nadie se inscribe por encima del cupo, ni siquiera con dos altas al mismo tiempo.

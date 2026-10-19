@@ -11,7 +11,7 @@ use Tests\TestCase;
 /**
  * Comprueba que las migraciones dejan la base igual al modelo v4.4 y que las
  * reglas que protege la propia base funcionan desde Laravel.
- * (Las 137 pruebas completas del modelo están en docs/bd_v4.4/04_pruebas.sql.)
+ * (Las 139 pruebas completas del modelo están en docs/base-de-datos/04_pruebas.sql.)
  */
 class BaseDeDatosTest extends TestCase
 {
@@ -29,7 +29,7 @@ class BaseDeDatosTest extends TestCase
         $tablas = $this->contar("SELECT COUNT(*) FROM information_schema.TABLES
             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME <> 'migrations'");
         $this->assertSame(34, $tablas, 'tablas');
-        $this->assertSame(38, $this->contar('SELECT COUNT(*) FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA = DATABASE()'), 'triggers');
+        $this->assertSame(39, $this->contar('SELECT COUNT(*) FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA = DATABASE()'), 'triggers');
         $this->assertSame(2, $this->contar("SELECT COUNT(*) FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = DATABASE() AND ROUTINE_TYPE = 'PROCEDURE'"), 'procedimientos');
         $this->assertSame(7, $this->contar('SELECT COUNT(*) FROM information_schema.VIEWS WHERE TABLE_SCHEMA = DATABASE()'), 'vistas');
     }
@@ -63,6 +63,21 @@ class BaseDeDatosTest extends TestCase
             'fecha_nacimiento' => now()->subYears(15)->toDateString(), 'email' => 'menor@nep30.test',
             'telefono' => '3704 222222', 'acepta_privacidad' => true,
         ]);
+    }
+
+    public function test_la_correccion_de_asistencia_queda_auditada(): void
+    {
+        $profesor = User::where('email', 'profesor@nep30.test')->firstOrFail();
+        $asistencia = DB::table('asistencias')->where('estado', 'justificado')->first();
+
+        DB::statement('SET @app_usuario_id = ?, @app_ip = ?', [$profesor->id, '127.0.0.1']);
+        DB::table('asistencias')->where('id', $asistencia->id)->update(['estado' => 'presente']);
+
+        $registro = DB::table('auditoria')->where('tabla', 'asistencias')->where('registro_id', $asistencia->id)->first();
+        $this->assertNotNull($registro);
+        $this->assertSame($profesor->id, (int) $registro->usuario_id);
+        $this->assertSame('justificado', json_decode($registro->valores_anteriores)->estado);
+        $this->assertSame('presente', json_decode($registro->valores_nuevos)->estado);
     }
 
     public function test_el_middleware_identifica_al_usuario_y_la_base_frena_al_auditor(): void

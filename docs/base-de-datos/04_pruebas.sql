@@ -220,6 +220,12 @@ INSERT INTO clases (id, curso_profesor_id, fecha) VALUES
 UPDATE clases SET estado = 'suspendida' WHERE id = 5;
 INSERT INTO asistencias (clase_id, inscripcion_id, estado) VALUES
  (1, 1, 'presente'), (2, 1, 'tarde'), (3, 1, 'justificado'), (4, 1, 'ausente'), (5, 1, 'ausente');
+-- El profesor corrige la asistencia de la clase suspendida (no cambia el porcentaje):
+-- queda auditado. Volver a guardar el mismo estado no agrega registros.
+SET @app_usuario_id = 2;
+UPDATE asistencias SET estado = 'justificado' WHERE clase_id = 5 AND inscripcion_id = 1;
+UPDATE asistencias SET estado = 'presente'    WHERE clase_id = 1 AND inscripcion_id = 1;
+SET @app_usuario_id = 1;
 
 INSERT INTO tareas (id, curso_profesor_id, titulo, fecha_entrega) VALUES
  (1, 1, 'Práctica de Word', '2027-04-10 23:59:00');
@@ -406,6 +412,10 @@ CALL debe_valer('HU09', 'La aprobación de la preinscripción queda auditada',
      'SELECT JSON_UNQUOTE(JSON_EXTRACT(valores_nuevos, ''$.estado'')) FROM auditoria WHERE tabla = ''preinscripciones'' AND registro_id = 1 AND accion = ''modificacion''', 'aprobada');
 CALL debe_valer('HU17', 'La acreditación del módulo queda auditada',
      'SELECT COUNT(*) FROM auditoria WHERE tabla = ''inscripcion_materias'' AND registro_id = 1 AND JSON_UNQUOTE(JSON_EXTRACT(valores_nuevos, ''$.estado'')) = ''acreditada''', '1');
+CALL debe_valer('HU16', 'La corrección de asistencia queda auditada (quién, antes y después)',
+     'SELECT CONCAT(usuario_id, '':'', JSON_UNQUOTE(JSON_EXTRACT(valores_anteriores, ''$.estado'')), ''>'', JSON_UNQUOTE(JSON_EXTRACT(valores_nuevos, ''$.estado''))) FROM auditoria WHERE tabla = ''asistencias''', '2:ausente>justificado');
+CALL debe_valer('HU16', 'Guardar la asistencia sin cambios no agrega registros de auditoría',
+     'SELECT COUNT(*) FROM auditoria WHERE tabla = ''asistencias''', '1');
 CALL debe_valer('RF36', 'La descarga del Auditor queda registrada',
      'SELECT COUNT(*) FROM auditoria WHERE usuario_id = 8 AND accion = ''descarga''', '1');
 CALL debe_valer('HU18', 'El Auditor pudo cambiar su propia contraseña',
