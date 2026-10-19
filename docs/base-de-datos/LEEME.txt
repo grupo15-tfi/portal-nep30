@@ -1,0 +1,77 @@
+BASE DE DATOS v4.4 - Portal N.E.P. y F.P. N.º 30 - TFI Grupo 15
+================================================================
+Ajustada con la entrevista a la institución del 13/10/2026.
+
+ARCHIVOS
+  01_esquema.sql             34 tablas, restricciones CHECK, 38 triggers, 2 procedimientos y 7 vistas.
+  02_seguridad.sql           usuarios de MySQL con privilegio mínimo (app, migraciones,
+                             backup, lectura). Reemplazar las claves CAMBIAR_... antes de usarlo.
+  03_datos_base.sql          4 roles y sus permisos (Spatie), secciones del sitio y catálogo
+                             de cursos del folleto 2026 (9 de FP y 3 modalidades de primaria).
+  04_pruebas.sql             137 pruebas automáticas (SOLO en desarrollo: carga datos de ejemplo).
+  05_prueba_privilegios.sh   20 pruebas de los permisos de cada usuario de MySQL.
+  backup.sh                  copia de seguridad diaria para el cron del hosting.
+  grupo15_DER_v4.4.png/.pdf/.drawio   diagrama entidad-relación.
+
+QUÉ CAMBIÓ DESDE LA v4.3
+  Se quitó   certificados con QR, validación pública y anulación (la institución no los usa).
+  Se quitó   comentarios y sugerencias (la institución no los quiere).
+  Nuevo      lista de espera: sin cupo, la preinscripción queda "en_espera" sola; vista
+             v_lista_espera por orden de llegada con el teléfono; registro del aviso telefónico.
+  Nuevo      edad mínima (18), nota de aprobación (6) y asistencia mínima (80 %) guardadas en
+             cada plan: el Administrador las cambia desde el panel sin tocar código.
+  Nuevo      acreditación de módulos: exige nota y asistencia; guarda la fecha de acreditación.
+  Nuevo      recuperatorio: solo si hay un parcial desaprobado.
+  Nuevo      la falta justificada no cuenta como ausente.
+  Nuevo      historial académico: vistas v_historial_academico y v_historial_resumen (PDF HU17).
+  Nuevo      rol Auditor de solo lectura, también controlado por la base.
+  Nuevo      días y horario de cada curso; observaciones de cada sede; v_resumen_sedes.
+  Nuevo      la auditoría registra también el alta de preinscripciones, los cambios de rol
+             y las descargas (historial en PDF y planillas Excel).
+
+CÓMO PROBARLO EN LA PC (XAMPP, Laragon o MySQL Workbench)
+  1. Ejecutar 01_esquema.sql
+  2. Ejecutar 02_seguridad.sql (opcional en la PC)
+  3. Ejecutar 03_datos_base.sql
+  4. Ejecutar 04_pruebas.sql  -> al final: total 137, ok 137, fallas 0
+  Para repetir desde cero: DROP DATABASE portal_nep30; y volver al paso 1.
+  Probado en MySQL 8.0.46 y en MariaDB 10.11: 137 de 137 en los dos.
+
+QUÉ PROTEGE LA BASE POR SÍ MISMA (aunque falle una validación de Laravel)
+  - Cupo: nadie se inscribe por encima del cupo, ni siquiera con dos altas al mismo tiempo.
+  - Sin cupo, la preinscripción va a la lista de espera; una sola solicitud abierta por DNI y curso.
+  - Solo se da de alta una preinscripción aprobada, y en el mismo curso.
+  - Edad mínima del plan al preinscribirse.
+  - Solo se preinscribe o inscribe en cursos activos de sedes activas.
+  - Un profesor solo carga notas en las materias que tiene asignadas.
+  - Un módulo se acredita con la nota y la asistencia mínimas del plan.
+  - Asistencia y entregas solo de alumnos del curso; "fuera de término" lo calcula la base.
+  - Preinscripción revisada: no cambia de estado, guarda quién y cuándo, el rechazo exige motivo.
+  - El Auditor no puede modificar alumnos, notas, asistencia, preinscripciones, usuarios ni roles.
+  - Auditoría automática con valor anterior y nuevo; la auditoría no se puede modificar ni borrar.
+  - Contraseñas solo como hash bcrypt; DNI, correo, teléfono, coordenadas, archivos validados.
+
+PARA LARAVEL
+  - Las tablas se crean con migraciones equivalentes a 01_esquema.sql; los triggers, los
+    procedimientos y las vistas van en una migración con DB::unprepared(file_get_contents(...)).
+  - En un middleware, al iniciar cada pedido con sesión:
+        DB::statement('SET @app_usuario_id = ?, @app_ip = ?', [auth()->id(), request()->ip()]);
+    así la auditoría registra quién hizo cada cambio y la base reconoce al Auditor.
+  - En el sitio público (preinscripción) no hay sesión: @app_usuario_id queda NULL.
+  - Al descargar un historial en PDF o una planilla Excel, Laravel agrega a la auditoría:
+        accion = 'descarga', tabla = 'v_historial_academico' (o el nombre de la planilla).
+  - El PDF del historial dice: "No reemplaza al certificado analítico oficial".
+  - .env: DB_USERNAME=nep30_app (nunca root). Las migraciones se corren con nep30_migraciones.
+  - Los errores de los triggers llegan como QueryException con SQLSTATE 45000 y un mensaje en
+    español que se puede mostrar al usuario.
+
+DESPLIEGUE
+  - Crear triggers y procedimientos con nep30_migraciones (sin SUPER) requiere que el
+    servidor NO tenga binlog o tenga log_bin_trust_function_creators = 1. La VPS de demos
+    ya está así (disable_log_bin en mysql-portal.cnf). En un hosting compartido, consultarlo.
+  - Sedes y anexos: se cargan desde el panel ubicando cada punto en el mapa. Varias
+    direcciones del folleto son "Mz. y C." y Nominatim no las encuentra.
+
+PENDIENTE DE CONFIRMAR CON LA INSTITUCIÓN
+  Cupo de cada curso, duración y ciclos de la terminalidad, direcciones y teléfonos de los
+  anexos sin dato, y si se usan correlatividades (si no, la tabla queda vacía).
