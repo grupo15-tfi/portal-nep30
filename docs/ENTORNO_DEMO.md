@@ -155,7 +155,7 @@ php artisan db:seed --force        # roles, permisos, catálogo, Administrador y
 unset DB_USERNAME DB_PASSWORD
 
 php artisan storage:link
-chgrp -R www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache
+sudo chgrp -R www-data storage bootstrap/cache && sudo chmod -R ug+rwX storage bootstrap/cache
 php artisan optimize
 sudo systemctl restart supervisor   # recién ahora existe storage/logs: Supervisor puede arrancar
 sudo supervisorctl status           # portal-nep30-worker_00 tiene que decir RUNNING
@@ -202,7 +202,8 @@ fin del sprint: PR develop → main → tests → deploy automático → demo �
 |---|---|---|
 | 502 Bad Gateway | PHP-FPM caído | `sudo systemctl restart php8.4-fpm` |
 | Los correos no llegan | Worker detenido o error en Brevo | `sudo supervisorctl status` · `php artisan queue:failed` · `tail storage/logs/worker.log` |
-| `Permission denied` en `storage` | Permisos después de un cambio manual | `chgrp -R www-data storage bootstrap/cache && chmod -R ug+rwX storage bootstrap/cache` |
+| `Permission denied` en `storage` | Permisos después de un cambio manual | `sudo chgrp -R www-data storage bootstrap/cache && sudo chmod -R ug+rwX storage bootstrap/cache` |
+| El deploy falla y el sitio da 503 (mantenimiento) | El script se cortó después de `php artisan down` | `cd /var/www/portal-nep30 && php artisan up`; la causa está en **Actions** → ejecución en rojo → paso "Deploy por SSH" |
 | `SQLSTATE[42000] ... 1142 command denied` | Una migración corrió con `nep30_app` | Correr `migrate` con `source ~/.nep30_migraciones.env` (deploy.sh ya lo hace) |
 | Certbot falla | La etiqueta DNS no existe o el puerto 80 está cerrado | Revisar la etiqueta DNS y los puertos de la VM |
 | La página no cambia después del deploy | JS en caché del navegador | Recargar con Ctrl+F5 |
