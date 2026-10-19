@@ -25,8 +25,9 @@ php artisan storage:link 2>/dev/null || true
 php artisan optimize
 
 # Permisos de escritura para PHP en storage y bootstrap/cache
-chgrp -R www-data storage bootstrap/cache
-chmod -R ug+rwX storage bootstrap/cache
+# Solo los archivos del usuario del deploy: worker.log es de root (Supervisor) y los
+# que crea PHP son de www-data; chgrp sobre ellos falla y cortaba el deploy.
+find storage bootstrap/cache -user "$(id -un)" -exec chgrp www-data {} + -exec chmod ug+rwX {} +
 
 sudo systemctl reload php8.4-fpm
 php artisan queue:restart
