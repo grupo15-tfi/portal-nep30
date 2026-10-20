@@ -27,7 +27,7 @@ class Curso extends Model
     // Accesor para leer el cupo disponible desde la vista SQL sin recalcular en PHP
     public function getCupoDisponibleAttribute()
     {
-        return DB::table('v_cupos_disponibles')
+        return (int) DB::table('v_cupos_disponibles')
             ->where('curso_id', $this->id)
             ->value('disponibles');
     }
