@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use App\Livewire\Auth\Login;
 use App\Models\User;
-use Database\Seeders\RolesYPermisosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -17,8 +16,8 @@ class LoginTest extends TestCase
 {
     use RefreshDatabase;
 
-    // Solo los roles: no hace falta cargar todos los datos de prueba
-    protected $seeder = RolesYPermisosSeeder::class;
+    // Misma siembra que el resto de las pruebas (DatabaseSeeder completo)
+    protected $seed = true;
 
     private function intentar(string $email, string $password)
     {
@@ -119,5 +118,13 @@ class LoginTest extends TestCase
     public function test_invitado_es_redirigido_al_login(): void
     {
         $this->get('/admin/inicio')->assertRedirect('/login');
+    }
+
+    public function test_cerrar_sesion_vuelve_al_login(): void
+    {
+        $alumno = User::factory()->conRol('alumno')->create();
+
+        $this->actingAs($alumno)->post('/logout')->assertRedirect('/login');
+        $this->assertGuest();
     }
 }
