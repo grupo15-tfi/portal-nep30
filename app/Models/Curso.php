@@ -25,7 +25,7 @@ class Curso extends Model
     public function periodoLectivo() { return $this->belongsTo(PeriodoLectivo::class, 'periodo_id'); }
 
     // Accesor para leer el cupo disponible desde la vista SQL sin recalcular en PHP
-    public function getCupoDisponibleAttribute()
+    public function getCupoDisponibleAttribute(): int
     {
         return (int) DB::table('v_cupos_disponibles')
             ->where('curso_id', $this->id)
