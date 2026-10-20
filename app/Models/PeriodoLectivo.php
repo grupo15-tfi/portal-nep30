@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\fillable;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[fillable(['anio', 'cuatrimestre', 'fecha_inicio', 'fecha_fin', 'estado'])]
+#[Fillable(['anio', 'cuatrimestre', 'fecha_inicio', 'fecha_fin', 'estado'])]
 
 class PeriodoLectivo extends Model
 {

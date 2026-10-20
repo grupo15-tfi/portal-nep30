@@ -29,6 +29,6 @@ class Curso extends Model
     {
         return DB::table('v_cupos_disponibles')
             ->where('curso_id', $this->id)
-            ->value('cupo_disponible') ?? $this->cupo;
+            ->value('disponibles');
     }
 }
