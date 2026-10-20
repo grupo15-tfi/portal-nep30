@@ -20,8 +20,25 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login');
 })->middleware('auth')->name('logout');
 
-// Panel de inicio de cada rol (solo usuarios con ese rol)
-Route::middleware(['auth', 'role:administrador'])->get('/admin/inicio', fn () => view('panel.inicio'));
-Route::middleware(['auth', 'role:profesor'])->get('/profesor/inicio', fn () => view('panel.inicio'));
-Route::middleware(['auth', 'role:alumno'])->get('/alumno/inicio', fn () => view('panel.inicio'));
-Route::middleware(['auth', 'role:auditor'])->get('/auditor/inicio', fn () => view('panel.inicio'));
+// Paneles por rol: cada grupo exige sesión iniciada y el rol correspondiente.
+// Las rutas nuevas de cada rol van dentro de su grupo (URL /<prefijo>/..., nombre <rol>.<ruta>).
+
+Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU07 (#9): rutas de sedes, cursos y planes van acá
+});
+
+Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
+    Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // Historias del rol Profesor: sus rutas van acá
+});
+
+Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->group(function () {
+    Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // Historias del rol Alumno: sus rutas van acá
+});
+
+Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')->group(function () {
+    Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // Historias del rol Auditor: sus rutas van acá
+});
