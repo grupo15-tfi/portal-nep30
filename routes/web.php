@@ -25,6 +25,8 @@ Route::post('/logout', function (Request $request) {
 
 Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    Route::view('/cursos', 'admin.cursos')->name('cursos');
+    Route::view('/planes', 'admin.planes')->name('planes');
     // HU07 (#9): rutas de sedes, cursos y planes van acá
 });
 
