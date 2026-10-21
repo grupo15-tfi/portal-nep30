@@ -25,7 +25,7 @@
             ['Sedes', 'admin.sedes'],
             ['Planes de estudio', 'admin.planes'],
             ['Cursos', 'admin.cursos'],
-            ['Profesores', 'admin.profesores'],             // HU08
+            ['Profesores', 'admin.profesores.index'],       // HU08
             ['Preinscripciones', 'admin.preinscripciones'], // HU09
             ['Noticias y contenidos', 'admin.noticias'],    // HU10
             ['Auditoría', 'admin.auditoria'],               // HU16
