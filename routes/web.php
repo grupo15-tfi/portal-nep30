@@ -20,6 +20,9 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login');
 })->middleware('auth')->name('logout');
 
+// HU06 (#16): perfil propio, para los cuatro roles (solo con sesión iniciada)
+Route::view('/perfil', 'perfil')->middleware('auth')->name('perfil');
+
 // Paneles por rol: cada grupo exige sesión iniciada y el rol correspondiente.
 // Las rutas nuevas de cada rol van dentro de su grupo (URL /<prefijo>/..., nombre <rol>.<ruta>).
 
