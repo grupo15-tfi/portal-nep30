@@ -8,9 +8,13 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+            // Fuentes del logo: Fraunces (títulos) y Nunito (texto)
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                bunny('Fraunces', {
+                    weights: [600, 700],
+                }),
+                bunny('Nunito', {
+                    weights: [400, 600, 700],
                 }),
             ],
         }),

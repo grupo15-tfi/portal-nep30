@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('titulo', 'Inicio') · N.E.P. y F.P. N.º 30</title>
+    <meta name="description" content="Núcleo de Educación Permanente y Formación Profesional N.º 30 «Hna. María Delgado Valero» (Formosa).">
+
+    {{-- Si todavía no se compiló con npm run build, la página se ve sin estilos pero funciona (y las pruebas pasan) --}}
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @fonts
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
+</head>
+<body class="min-h-screen flex flex-col bg-white text-texto font-sans text-base leading-relaxed">
+    {{-- Accesibilidad: saltar el menú con el teclado --}}
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:px-3 focus:py-2 focus:z-50">
+        Saltar al contenido
+    </a>
+
+    <header class="bg-primario text-white">
+        <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
+            <a href="{{ route('inicio') }}" class="font-titulos text-lg font-semibold leading-tight min-w-0">
+                N.E.P. y F.P. N.º 30
+            </a>
+
+            @php
+                $menu = [
+                    ['Inicio', route('inicio')],
+                    ['Historia', route('historia')],
+                    ['Oferta educativa', '#'], // provisorio: HU02 (Sprint 2)
+                    ['Sedes', '#'],            // provisorio: HU03 (Sprint 2)
+                    ['Noticias', route('noticias.index')],
+                    ['Contacto', route('contacto')],
+                ];
+            @endphp
+
+            {{-- Escritorio --}}
+            <nav aria-label="Menú principal" class="hidden md:flex items-center gap-5">
+                @foreach ($menu as [$texto, $url])
+                    <a href="{{ $url }}" class="hover:underline focus:underline">{{ $texto }}</a>
+                @endforeach
+                <a href="{{ route('login') }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Ingresar</a>
+            </nav>
+
+            {{-- Celular: menú desplegable sin JavaScript --}}
+            <details class="md:hidden relative">
+                <summary class="cursor-pointer list-none rounded border border-white/60 px-3 py-1.5">Menú</summary>
+                <nav aria-label="Menú principal" class="absolute right-0 mt-2 w-56 rounded bg-white text-texto shadow-lg py-2 z-40">
+                    @foreach ($menu as [$texto, $url])
+                        <a href="{{ $url }}" class="block px-4 py-2 hover:bg-primario-claro">{{ $texto }}</a>
+                    @endforeach
+                    <a href="{{ route('login') }}" class="block px-4 py-2 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
+                </nav>
+            </details>
+        </div>
+    </header>
+
+    <main id="contenido" class="flex-1 mx-auto w-full max-w-6xl px-4 py-8">
+        @yield('contenido')
+    </main>
+
+    <footer class="bg-primario text-white">
+        <div class="mx-auto max-w-6xl px-4 py-6 flex flex-col gap-2 md:flex-row md:justify-between">
+            <p>Núcleo de Educación Permanente y Formación Profesional N.º 30 · Formosa</p>
+            <nav aria-label="Enlaces del pie" class="flex gap-4">
+                <a href="{{ route('contacto') }}" class="underline">Contacto</a>
+                <a href="{{ route('privacidad') }}" class="underline">Política de privacidad</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

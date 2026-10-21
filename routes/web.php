@@ -1,12 +1,17 @@
 <?php
 
+use App\Http\Controllers\SitioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// ---------- HU01 (#11): sitio público (sin iniciar sesión) ----------
+Route::get('/', [SitioController::class, 'inicio'])->name('inicio');
+Route::get('/historia', [SitioController::class, 'seccion'])->defaults('clave', 'historia')->name('historia');
+Route::get('/contacto', [SitioController::class, 'seccion'])->defaults('clave', 'contacto')->name('contacto');
+Route::get('/privacidad', [SitioController::class, 'seccion'])->defaults('clave', 'privacidad')->name('privacidad');
+Route::get('/noticias', [SitioController::class, 'noticias'])->name('noticias.index');
+Route::get('/noticias/{slug}', [SitioController::class, 'noticia'])->name('noticias.show');
 
 // HU05: inicio de sesión. El nombre "login" es adonde Laravel manda a los invitados.
 Route::view('/login', 'auth.login')->middleware('guest')->name('login');
