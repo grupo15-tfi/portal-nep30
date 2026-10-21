@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cursos · N.E.P. y F.P. N.º 30</title>
-</head>
-<body>
-    {{-- Provisorio: cuando esté el layout de los paneles (#8) se reemplaza por <x-layouts.panel titulo="Cursos"> --}}
+{{-- El componente ya trae su propio título (h1) --}}
+<x-layouts.panel titulo="Cursos" :encabezado="false">
     <livewire:admin.cursos.index />
-</body>
-</html>
+</x-layouts.panel>
