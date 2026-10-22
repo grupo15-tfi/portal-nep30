@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inicio - {{ config('app.name', 'Laravel') }}</title>
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
-</head>
-<body>
-    <main>
-        <h1>Bienvenido/a, {{ auth()->user()->nombreCompleto() }}</h1>
-    </main>
-</body>
-</html>
+<x-layouts.panel titulo="Inicio">
+    <p class="text-lg">Bienvenido/a, {{ auth()->user()->nombreCompleto() }}.</p>
+    <p class="mt-2 text-texto-suave">Elegí una opción del menú para empezar.</p>
+</x-layouts.panel>
