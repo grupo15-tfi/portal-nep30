@@ -26,7 +26,6 @@ class User extends Authenticatable
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
     use TieneTelefonos;
     use RecuperaContrasena;  
-    use TieneTelefonos;
     use EsProfesor;
     protected function casts(): array
     {
