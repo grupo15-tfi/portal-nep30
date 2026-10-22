@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SitioController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,10 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/cursos', 'admin.cursos')->name('cursos');
     Route::view('/planes', 'admin.planes')->name('planes');
     Route::view('/sedes', 'admin.sedes')->name('sedes');
+    // HU08 (#14): gestión de profesores
+    Route::view('/profesores', 'admin.profesores')->name('profesores.index');
+    Route::get('/profesores/{profesor}/asignaciones', fn (User $profesor) => view('admin.profesores-asignaciones', ['profesor' => $profesor]))
+        ->name('profesores.asignaciones');
     
 });
 
