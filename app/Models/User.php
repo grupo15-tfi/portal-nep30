@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-use App\Models\Concerns\RecuperaContrasena;     
+use App\Models\Concerns\RecuperaContrasena;  
+use App\Models\Concerns\EsProfesor; 
 use App\Models\Concerns\TieneTelefonos;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,7 +26,8 @@ class User extends Authenticatable
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
     use TieneTelefonos;
     use RecuperaContrasena;  
-
+    use TieneTelefonos;
+    use EsProfesor;
     protected function casts(): array
     {
         return [
