@@ -3,7 +3,53 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+ * Paleta y tipografía del logo (página «Estilos» de Figma, Arce).
+ * Los nombres son los mismos que las variables de Figma: no renombrarlos,
+ * los usan el sitio público y el layout de los paneles (bg-primario, text-texto, etc.).
+ * Contraste verificado WCAG 2.1 AA (4,5:1). «borde» NO va en bordes de campos (1,6:1).
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primario: #23358C;
+    --color-primario-claro: #E3EDFA;
+    --color-texto: #2A3242;
+    --color-texto-suave: #4A5363;
+    --color-borde: #C9CED8;
+    --color-exito: #24693F;
+    --color-error: #B83227;
+
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    --font-titulos: 'Fraunces', ui-serif, Georgia, serif;
+}
+/*
+ * Estilos base del campus: las pantallas sin clases propias (ABM de sedes, cursos, planes, etc.)
+ * se ven prolijas igual. Cualquier clase de Tailwind en un elemento tiene prioridad sobre esto.
+ */
+@layer base {
+    h1 { @apply font-titulos text-2xl font-semibold text-primario mb-4; }
+    h2 { @apply font-titulos text-xl font-semibold text-primario mt-8 mb-3; }
+    h3 { @apply font-semibold text-lg mt-6 mb-2; }
+
+    label { @apply font-semibold; }
+    form > div, fieldset > div { @apply flex flex-col gap-1 mb-4 max-w-md; }
+    fieldset { @apply border border-borde rounded p-4 mb-4 max-w-md; }
+    legend { @apply font-semibold px-1; }
+
+    input:not([type='checkbox']):not([type='radio']), select, textarea {
+        @apply rounded border border-gray-500 bg-white px-3 py-2 w-full;
+    }
+    input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible {
+        @apply outline-2 outline-offset-2 outline-primario;
+    }
+
+    button { @apply cursor-pointer rounded border border-primario px-3 py-1.5 font-semibold text-primario hover:bg-primario-claro; }
+    button[type='submit'] { @apply bg-primario text-white hover:bg-primario/90; }
+
+    table { @apply w-full border-collapse mb-6 text-sm; }
+    th { @apply text-left border-b-2 border-borde px-2 py-2; }
+    td { @apply border-b border-borde px-2 py-2 align-top; }
+    td button { @apply mb-1 mr-1 text-sm; }
+
+    [role='alert'] { @apply text-error; }
+    [role='status'] { @apply text-exito font-semibold mb-4; }
 }

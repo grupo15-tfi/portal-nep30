@@ -33,7 +33,7 @@ php artisan serve        # http://localhost:8000  (admin@nep30.test / password)
 ## Base de datos (modelo v4.4)
 
 Las migraciones crean el modelo v4.4 completo: 34 tablas con sus restricciones CHECK,
-38 triggers, 2 procedimientos y 7 vistas (`database/sql/`). La base protege por sí misma
+39 triggers, 2 procedimientos y 7 vistas (`database/sql/`). La base protege por sí misma
 las reglas del negocio: cupo y lista de espera, edad mínima, acreditación con nota 6 y
 80 % de asistencia, recuperatorio, rol Auditor de solo lectura y auditoría automática.
 
@@ -41,7 +41,7 @@ las reglas del negocio: cupo y lista de espera, edad mínima, acreditación con 
   (`@app_usuario_id`, `@app_ip`).
 - Los errores de los triggers llegan como `QueryException` (SQLSTATE 45000) con el
   mensaje en español.
-- Referencia del modelo, DER y las 137 pruebas en SQL: [docs/base-de-datos](docs/base-de-datos).
+- Referencia del modelo, DER y las 139 pruebas en SQL: [docs/base-de-datos](docs/base-de-datos).
 
 ## Seeders
 

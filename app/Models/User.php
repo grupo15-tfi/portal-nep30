@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Concerns\RecuperaContrasena;  
+use App\Models\Concerns\EsProfesor; 
+use App\Models\Concerns\TieneTelefonos;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -22,7 +24,9 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
-
+    use TieneTelefonos;
+    use RecuperaContrasena;  
+    use EsProfesor;
     protected function casts(): array
     {
         return [

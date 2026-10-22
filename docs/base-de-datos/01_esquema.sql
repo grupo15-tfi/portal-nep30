@@ -38,6 +38,8 @@
 --     para adultos); la duración de la terminalidad queda a cargar.
 --   * La auditoría registra también el alta de cada preinscripción y las
 --     descargas (historial en PDF y planillas Excel).
+--   * (18/10) La auditoría registra también las correcciones de asistencia
+--     (trigger trg_asist_au), como muestra el wireframe del Auditor.
 --
 -- AUDITORÍA AUTOMÁTICA
 --   Laravel, al iniciar cada pedido con sesión, ejecuta:
@@ -1019,6 +1021,18 @@ BEGIN
                    JOIN inscripciones i     ON i.curso_id = cp.curso_id
                    WHERE cl.id = NEW.clase_id AND i.id = NEW.inscripcion_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alumno no pertenece al curso de esta clase';
+    END IF;
+END//
+
+-- Cada corrección de asistencia queda auditada con el estado anterior y el nuevo (HU16).
+CREATE TRIGGER trg_asist_au AFTER UPDATE ON asistencias
+FOR EACH ROW
+BEGIN
+    IF NOT (OLD.estado <=> NEW.estado) THEN
+        INSERT INTO auditoria (usuario_id, accion, tabla, registro_id, valores_anteriores, valores_nuevos, ip)
+        VALUES (@app_usuario_id, 'modificacion', 'asistencias', NEW.id,
+                JSON_OBJECT('estado', OLD.estado, 'clase_id', OLD.clase_id, 'inscripcion_id', OLD.inscripcion_id),
+                JSON_OBJECT('estado', NEW.estado), @app_ip);
     END IF;
 END//
 
