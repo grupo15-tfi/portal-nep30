@@ -1,0 +1,181 @@
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Actions\Profesores\GuardarProfesor;
+use App\Livewire\Admin\Profesores\Asignaciones;
+use App\Livewire\Admin\Profesores\Formulario;
+use App\Livewire\Admin\Profesores\Index;
+use App\Models\Curso;
+use App\Models\Materia;
+use App\Models\PlanEstudio;
+use App\Models\User;
+use App\Notifications\CrearContrasena;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+/**
+ * HU08 (#14): pantallas de gestión de profesores.
+ * Datos de DatosDePruebaSeeder: profesora «profesor@nep30.test» (DNI 20000001, apellido Prueba)
+ * con 3 asignaciones; la de «Módulo 1: Corte y peinado» ya tiene una clase y una tarea.
+ */
+class ProfesoresPantallaTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected $seed = true;
+
+    private function admin(): User
+    {
+        return User::factory()->conRol('administrador')->create();
+    }
+
+    private function profesoraDePrueba(): User
+    {
+        return User::where('email', 'profesor@nep30.test')->firstOrFail();
+    }
+
+    private function cursoPeluqueria(): Curso
+    {
+        return Curso::where('plan_id', PlanEstudio::where('nombre', 'Peluquería')->value('id'))->firstOrFail();
+    }
+
+    public function test_solo_el_administrador_entra_y_el_menu_muestra_profesores(): void
+    {
+        $this->actingAs($this->admin())->get('/admin/profesores')->assertOk()->assertSee('Profesores');
+        $this->actingAs($this->admin())->get('/admin/inicio')->assertSee(route('admin.profesores.index'), false);
+
+        foreach (['profesor', 'alumno', 'auditor'] as $rol) {
+            $this->actingAs(User::factory()->conRol($rol)->create())->get('/admin/profesores')->assertForbidden();
+        }
+    }
+
+    public function test_busqueda_por_dni_apellido_o_correo(): void
+    {
+        GuardarProfesor::ejecutar(['dni' => '30111222', 'apellido' => 'Zárate', 'nombre' => 'Inés', 'email' => 'ines.zarate@nep30.test', 'sede_id' => null]);
+
+        Livewire::actingAs($this->admin())->test(Index::class)
+            ->set('buscar', 'Zárate')->assertSee('30111222')->assertDontSee('20000001')
+            ->set('buscar', '20000001')->assertSee('profesor@nep30.test')->assertDontSee('30111222')
+            ->set('buscar', 'ines.zarate')->assertSee('Zárate');
+    }
+
+    public function test_listado_paginado_de_15(): void
+    {
+        User::factory()->count(16)->conRol('profesor')->create(); // + la profesora de prueba = 17
+
+        $componente = Livewire::actingAs($this->admin())->test(Index::class);
+
+        $this->assertCount(15, $componente->viewData('profesores')->items());
+        $componente->call('nextPage');
+        $this->assertCount(2, $componente->viewData('profesores')->items());
+    }
+
+    public function test_alta_desde_el_modal_envia_el_correo_crear_contrasena(): void
+    {
+        Notification::fake();
+
+        Livewire::actingAs($this->admin())->test(Formulario::class)
+            ->call('abrir')
+            ->set('dni', '25123456')->set('apellido', 'Gómez')->set('nombre', 'Laura')
+            ->set('email', 'laura.gomez@nep30.test')
+            ->call('guardar')
+            ->assertHasNoErrors()
+            ->assertSet('abierto', false)
+            ->assertDispatched('profesor-guardado');
+
+        $nuevo = User::where('email', 'laura.gomez@nep30.test')->firstOrFail();
+        $this->assertTrue($nuevo->hasRole('profesor'));
+        Notification::assertSentTo($nuevo, CrearContrasena::class);
+    }
+
+    public function test_errores_debajo_de_cada_campo(): void
+    {
+        Livewire::actingAs($this->admin())->test(Formulario::class)
+            ->call('abrir')
+            ->set('dni', '20000001')->set('apellido', '')->set('nombre', 'Laura')->set('email', 'profesor@nep30.test')
+            ->call('guardar')
+            ->assertHasErrors(['dni', 'apellido', 'email'])
+            ->assertSee('Ya existe un usuario con ese DNI')
+            ->assertSee('Ya existe un usuario con ese correo')
+            ->assertSet('abierto', true); // el modal sigue abierto
+    }
+
+    public function test_editar_no_envia_correo(): void
+    {
+        Notification::fake();
+        $profesora = $this->profesoraDePrueba();
+
+        Livewire::actingAs($this->admin())->test(Formulario::class)
+            ->call('abrir', $profesora->id)
+            ->assertSet('dni', $profesora->dni)
+            ->set('apellido', 'Apellido Editado')
+            ->call('guardar')
+            ->assertHasNoErrors();
+
+        $this->assertSame('Apellido Editado', $profesora->fresh()->apellido);
+        Notification::assertNothingSent();
+    }
+
+    public function test_baja_y_alta_con_el_boton(): void
+    {
+        $profesora = $this->profesoraDePrueba();
+        $componente = Livewire::actingAs($this->admin())->test(Index::class);
+
+        $componente->call('cambiarEstado', $profesora->id)->assertSee('quedó dado de baja');
+        $this->assertFalse($profesora->fresh()->activo);
+
+        $componente->call('cambiarEstado', $profesora->id)->assertSee('quedó activo');
+        $this->assertTrue($profesora->fresh()->activo);
+    }
+
+    public function test_asignaciones_muestra_solo_materias_del_plan_y_asigna(): void
+    {
+        $profesor = GuardarProfesor::ejecutar(['dni' => '30111222', 'apellido' => 'Zárate', 'nombre' => 'Inés', 'email' => 'ines.zarate@nep30.test', 'sede_id' => null]);
+        $curso = $this->cursoPeluqueria();
+        $color = Materia::where('nombre', 'Módulo 2: Coloración')->firstOrFail();
+
+        $this->actingAs($this->admin())->get(route('admin.profesores.asignaciones', $profesor))->assertOk();
+
+        Livewire::actingAs($this->admin())->test(Asignaciones::class, ['profesor' => $profesor])
+            ->set('curso_id', (string) $curso->id)
+            ->assertSee('Módulo 2: Coloración')
+            ->assertDontSee('Módulo 1: Ofimática')        // es de otro plan
+            ->set('materia_id', (string) $color->id)
+            ->call('asignar')
+            ->assertHasNoErrors()
+            ->assertSee('Materia asignada.');
+
+        $this->assertDatabaseHas('curso_profesores', ['profesor_id' => $profesor->id, 'materia_id' => $color->id]);
+    }
+
+    public function test_errores_de_asignacion_se_muestran(): void
+    {
+        $profesora = $this->profesoraDePrueba();
+        $curso = $this->cursoPeluqueria();
+        $ofimatica = Materia::where('nombre', 'Módulo 1: Ofimática')->firstOrFail();
+        $corte = Materia::where('nombre', 'Módulo 1: Corte y peinado')->firstOrFail();
+
+        // Materia de otro plan (no debería pasar por el combo, pero la acción lo frena igual)
+        Livewire::actingAs($this->admin())->test(Asignaciones::class, ['profesor' => $profesora])
+            ->set('curso_id', (string) $curso->id)
+            ->set('materia_id', (string) $ofimatica->id)
+            ->call('asignar')
+            ->assertHasErrors('materia_id');
+
+        // Quitar una asignación que ya tiene clases y tareas
+        Livewire::actingAs($this->admin())->test(Asignaciones::class, ['profesor' => $profesora])
+            ->call('quitar', $curso->id, $corte->id)
+            ->assertHasErrors('materia_id')
+            ->assertSee('No se puede quitar');
+    }
+
+    public function test_asignaciones_de_un_usuario_que_no_es_profesor_da_404(): void
+    {
+        $alumno = User::factory()->conRol('alumno')->create();
+
+        $this->actingAs($this->admin())->get(route('admin.profesores.asignaciones', $alumno))->assertNotFound();
+    }
+}
