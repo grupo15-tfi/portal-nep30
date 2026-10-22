@@ -56,3 +56,8 @@ Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
     // Historias del rol Auditor: sus rutas van acá
 });
+
+// HU06 (#15): recuperación y creación de contraseña (sin sesión)
+Route::view('/olvide-mi-contrasena', 'auth.olvide-contrasena')->middleware('guest')->name('password.request');
+Route::get('/restablecer/{token}', fn (string $token) => view('auth.restablecer-contrasena', ['token' => $token]))
+    ->middleware('guest')->name('password.reset');
