@@ -9,8 +9,8 @@
     @endif
 
     <div class="mb-4 max-w-md">
-        <label for="buscar">Buscar por DNI, apellido o correo</label>
-        <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: DNI, apellido o @gmail">
+        <label for="buscar">Buscar por DNI, nombre, apellido o correo</label>
+        <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: DNI, nombre, apellido o @gmail">
     </div>
 
     <div class="overflow-x-auto">
