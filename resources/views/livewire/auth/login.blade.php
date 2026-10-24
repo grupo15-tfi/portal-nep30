@@ -1,4 +1,8 @@
 <div>
+    @if (session('aviso'))
+        <p role="alert" class="text-error mb-4">{{ session('aviso') }}</p>
+    @endif
+
     <form wire:submit="ingresar" class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
             <label for="email" class="font-semibold">Correo electrónico</label>
