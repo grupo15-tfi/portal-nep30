@@ -33,6 +33,10 @@
                     ['Noticias', route('noticias.index')],
                     ['Contacto', route('contacto')],
                 ];
+
+                // #32: con sesión iniciada se muestra «Mi panel» (al inicio del panel de su rol) en lugar de «Ingresar».
+                // Un usuario sin rol no tiene panel: no se muestra ninguno de los dos.
+                $panel = auth()->user()?->rutaPanel();
             @endphp
 
             {{-- Escritorio --}}
@@ -40,7 +44,14 @@
                 @foreach ($menu as [$texto, $url])
                     <a href="{{ $url }}" class="hover:underline focus:underline">{{ $texto }}</a>
                 @endforeach
-                <a href="{{ route('login') }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Ingresar</a>
+                @auth
+                    @if ($panel)
+                        <a href="{{ $panel }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Mi panel</a>
+                    @endif
+                @endauth
+                @guest
+                    <a href="{{ route('login') }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Ingresar</a>
+                @endguest
             </nav>
 
             {{-- Celular: menú desplegable sin JavaScript --}}
@@ -50,7 +61,14 @@
                     @foreach ($menu as [$texto, $url])
                         <a href="{{ $url }}" class="block px-4 py-2 hover:bg-primario-claro">{{ $texto }}</a>
                     @endforeach
-                    <a href="{{ route('login') }}" class="block px-4 py-2 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
+                    @auth
+                        @if ($panel)
+                            <a href="{{ $panel }}" class="block px-4 py-2 font-semibold text-primario hover:bg-primario-claro">Mi panel</a>
+                        @endif
+                    @endauth
+                    @guest
+                        <a href="{{ route('login') }}" class="block px-4 py-2 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
+                    @endguest
                 </nav>
             </details>
         </div>
