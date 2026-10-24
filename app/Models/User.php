@@ -43,4 +43,20 @@ class User extends Authenticatable
     {
         return "{$this->apellido}, {$this->nombre}";
     }
+
+    /**
+     * URL del inicio del panel de su rol, o null si no tiene rol (#32: botón «Mi panel» del sitio público).
+     */
+    public function rutaPanel(): ?string
+    {
+        $ruta = match ($this->getRoleNames()->first()) {
+            'administrador' => 'admin.inicio',
+            'profesor'      => 'profesor.inicio',
+            'alumno'        => 'alumno.inicio',
+            'auditor'       => 'auditor.inicio',
+            default         => null,
+        };
+
+        return $ruta ? route($ruta) : null;
+    }
 }
