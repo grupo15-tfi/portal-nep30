@@ -44,6 +44,7 @@ class RestablecerContrasena extends Component
                 'password'              => $this->password,
                 'password_confirmation' => $this->password_confirmation,
                 'token'                 => $this->token,
+                'activo'                => true,   // #28: el broker no encuentra a un usuario dado de baja
             ],
             function (User $usuario, string $password) {
                 $usuario->forceFill([
