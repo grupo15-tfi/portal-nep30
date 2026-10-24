@@ -7,19 +7,19 @@
     @endif
     @error('materia_id') <p role="alert">{{ $message }}</p> @enderror
 
-    {{-- Lo que dicta hoy --}}
-    <table>
+    {{-- Lo que dicta hoy (en el celular, una tarjeta por materia: tabla-apilada en app.css) --}}
+    <table class="tabla-apilada">
         <thead>
             <tr><th>Materia</th><th>Curso</th><th>Sede</th><th>Turno</th><th>Acción</th></tr>
         </thead>
         <tbody>
             @forelse ($asignaciones as $a)
                 <tr wire:key="asignacion-{{ $a->id }}">
-                    <td>{{ $a->materia->nombre }}</td>
-                    <td>{{ $a->curso->planEstudio->nombre }}</td>
-                    <td>{{ $a->curso->sede->nombre }}</td>
-                    <td>{{ ucfirst($a->curso->turno) }}</td>
-                    <td>
+                    <td data-etiqueta="Materia">{{ $a->materia->nombre }}</td>
+                    <td data-etiqueta="Curso">{{ $a->curso->planEstudio->nombre }}</td>
+                    <td data-etiqueta="Sede">{{ $a->curso->sede->nombre }}</td>
+                    <td data-etiqueta="Turno">{{ ucfirst($a->curso->turno) }}</td>
+                    <td data-etiqueta="Acción">
                         <button type="button" wire:click="quitar({{ $a->curso_id }}, {{ $a->materia_id }})"
                                 wire:confirm="¿Quitar «{{ $a->materia->nombre }}» a este profesor?">Quitar</button>
                     </td>

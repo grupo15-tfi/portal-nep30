@@ -53,3 +53,14 @@
     [role='alert'] { @apply text-error; }
     [role='status'] { @apply text-exito font-semibold mb-4; }
 }
+
+/*
+ * Tablas que en el celular (menos de 768 px) se ven como tarjetas, una por fila, para que no se corten
+ * ni ensanchen la página. Uso: <table class="tabla-apilada"> y en cada <td> data-etiqueta="Nombre de la columna".
+ */
+@media (width < 48rem) {
+    .tabla-apilada thead { @apply sr-only; }
+    .tabla-apilada tr { @apply block rounded border border-borde mb-3 px-3 py-2; }
+    .tabla-apilada td { @apply flex gap-3 border-0 px-0 py-1; }
+    .tabla-apilada td[data-etiqueta]::before { content: attr(data-etiqueta); @apply w-28 shrink-0 font-semibold; }
+}
