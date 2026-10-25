@@ -55,7 +55,11 @@ class Index extends Component
             ->when($texto !== '', fn ($q) => $q->where(function ($w) use ($texto) {
                 $w->where('dni', 'like', "%{$texto}%")
                   ->orWhere('apellido', 'like', "%{$texto}%")
-                  ->orWhere('email', 'like', "%{$texto}%");
+                  ->orWhere('email', 'like', "%{$texto}%")
+                  // #31: también por nombre y nombre completo en los dos órdenes (texto siempre enlazado con ?)
+                  ->orWhere('nombre', 'like', "%{$texto}%")
+                  ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$texto}%"])
+                  ->orWhereRaw("CONCAT(apellido, ' ', nombre) LIKE ?", ["%{$texto}%"]);
             }))
             ->orderBy('apellido')
             ->orderBy('nombre')

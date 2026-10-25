@@ -62,6 +62,40 @@ class ProfesoresPantallaTest extends TestCase
             ->set('buscar', 'ines.zarate')->assertSee('Zárate');
     }
 
+    // ---------- #31: buscar por nombre y por nombre completo ----------
+
+    /**
+     * Juana Pérez (DNI 31222333) y otro profesor que no debe aparecer (DNI 32444555).
+     * Los correos no incluyen el nombre: así la búsqueda no coincide por el email.
+     */
+    private function buscarJuana(string $texto)
+    {
+        GuardarProfesor::ejecutar(['dni' => '31222333', 'apellido' => 'Pérez', 'nombre' => 'Juana', 'email' => 'docente.a@nep30.test', 'sede_id' => null]);
+        GuardarProfesor::ejecutar(['dni' => '32444555', 'apellido' => 'Gómez', 'nombre' => 'Carlos', 'email' => 'docente.b@nep30.test', 'sede_id' => null]);
+
+        return Livewire::actingAs($this->admin())->test(Index::class)->set('buscar', $texto);
+    }
+
+    public function test_busqueda_por_nombre(): void
+    {
+        $this->buscarJuana('Juana')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_por_nombre_y_apellido(): void
+    {
+        $this->buscarJuana('Juana Pérez')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_por_apellido_y_nombre(): void
+    {
+        $this->buscarJuana('Pérez Juana')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_sin_distinguir_mayusculas(): void
+    {
+        $this->buscarJuana('juana pérez')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
     public function test_listado_paginado_de_15(): void
     {
         User::factory()->count(16)->conRol('profesor')->create(); // + la profesora de prueba = 17
