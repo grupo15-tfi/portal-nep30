@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\SitioController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,6 +14,11 @@ Route::get('/contacto', [SitioController::class, 'seccion'])->defaults('clave', 
 Route::get('/privacidad', [SitioController::class, 'seccion'])->defaults('clave', 'privacidad')->name('privacidad');
 Route::get('/noticias', [SitioController::class, 'noticias'])->name('noticias.index');
 Route::get('/noticias/{slug}', [SitioController::class, 'noticia'])->name('noticias.show');
+
+// ---------- HU02 (#44): oferta educativa por sede y calendario académico (públicas) ----------
+Route::get('/oferta', [OfertaController::class, 'index'])->name('oferta');
+Route::get('/oferta/{curso}', [OfertaController::class, 'curso'])->whereNumber('curso')->name('oferta.curso');
+Route::get('/calendario', [OfertaController::class, 'calendario'])->name('calendario');
 
 // HU05: inicio de sesión. El nombre "login" es adonde Laravel manda a los invitados.
 Route::view('/login', 'auth.login')->middleware('guest')->name('login');
