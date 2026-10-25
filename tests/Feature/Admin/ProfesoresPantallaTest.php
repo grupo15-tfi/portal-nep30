@@ -206,6 +206,23 @@ class ProfesoresPantallaTest extends TestCase
             ->assertSee('No se puede quitar');
     }
 
+    public function test_en_el_celular_las_tablas_se_ven_como_tarjetas_con_la_etiqueta_de_cada_dato(): void
+    {
+        // Listado: cada dato lleva el nombre de su columna, así en 360 px se lee como tarjeta y las acciones no quedan fuera de la vista
+        $this->actingAs($this->admin())->get('/admin/profesores')
+            ->assertOk()
+            ->assertSee('class="tabla-apilada"', false)
+            ->assertSee('data-etiqueta="DNI"', false)
+            ->assertSee('data-etiqueta="Acciones"', false);
+
+        // Materias asignadas
+        $this->actingAs($this->admin())->get(route('admin.profesores.asignaciones', $this->profesoraDePrueba()))
+            ->assertOk()
+            ->assertSee('class="tabla-apilada"', false)
+            ->assertSee('data-etiqueta="Curso"', false)
+            ->assertSee('data-etiqueta="Acción"', false);
+    }
+
     public function test_asignaciones_de_un_usuario_que_no_es_profesor_da_404(): void
     {
         $alumno = User::factory()->conRol('alumno')->create();
