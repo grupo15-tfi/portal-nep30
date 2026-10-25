@@ -28,7 +28,7 @@
                 $menu = [
                     ['Inicio', route('inicio')],
                     ['Historia', route('historia')],
-                    ['Oferta educativa', '#'], // provisorio: HU02 (Sprint 2)
+                    ['Oferta educativa', route('oferta')], // HU02 (#44); el calendario se abre desde la oferta
                     ['Sedes', '#'],            // provisorio: HU03 (Sprint 2)
                     ['Noticias', route('noticias.index')],
                     ['Contacto', route('contacto')],
