@@ -223,6 +223,17 @@ class ProfesoresPantallaTest extends TestCase
             ->assertSee('data-etiqueta="Acción"', false);
     }
 
+    public function test_el_enlace_materias_se_ve_como_boton_igual_que_editar_y_dar_de_baja(): void
+    {
+        // Sugerencia de José: las tres acciones de la fila con el mismo aspecto (borde, relleno y texto primario)
+        $html = $this->actingAs($this->admin())->get('/admin/profesores')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<a href="[^"]*\/asignaciones"[^>]*class="[^"]*rounded border border-primario px-3 py-1\.5[^"]*"[^>]*>Materias<\/a>/',
+            $html
+        );
+    }
+
     public function test_asignaciones_de_un_usuario_que_no_es_profesor_da_404(): void
     {
         $alumno = User::factory()->conRol('alumno')->create();

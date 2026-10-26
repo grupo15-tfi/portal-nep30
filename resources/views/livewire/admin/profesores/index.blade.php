@@ -39,7 +39,7 @@
                         <td data-etiqueta="Acciones">
                             <div class="flex flex-wrap items-center gap-x-1">
                             <button type="button" wire:click="$dispatch('abrir-formulario', { id: {{ $profesor->id }} })">Editar</button>
-                            <a href="{{ route('admin.profesores.asignaciones', $profesor) }}" class="inline-block mb-1 mr-1 text-sm font-semibold text-primario underline">Materias</a>
+                            <a href="{{ route('admin.profesores.asignaciones', $profesor) }}" class="inline-block mb-1 mr-1 rounded border border-primario px-3 py-1.5 text-sm font-semibold text-primario hover:bg-primario-claro">Materias</a>
                             <button type="button" wire:click="cambiarEstado({{ $profesor->id }})"
                                     wire:confirm="¿Seguro que querés {{ $profesor->activo ? 'dar de baja' : 'dar de alta' }} a {{ $profesor->nombreCompleto() }}?">
                                 {{ $profesor->activo ? 'Dar de baja' : 'Dar de alta' }}
