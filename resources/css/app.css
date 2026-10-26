@@ -16,7 +16,9 @@
     --color-texto-suave: #4A5363;
     --color-borde: #C9CED8;
     --color-exito: #24693F;
+    --color-exito-claro: #E3F3E9;   /* fondo de la etiqueta «Activo» (contraste con exito: 5,8:1) */
     --color-error: #B83227;
+    --color-error-claro: #FBE4E1;   /* fondo de la etiqueta «De baja» (contraste con error: 4,9:1) */
 
     --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
     --font-titulos: 'Fraunces', ui-serif, Georgia, serif;

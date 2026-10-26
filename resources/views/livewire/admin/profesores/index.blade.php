@@ -35,7 +35,14 @@
                         <td data-etiqueta="Correo" class="break-all">{{ $profesor->email }}</td>
                         <td data-etiqueta="Sede">{{ $sedes[$profesor->sede_id] ?? '—' }}</td>
                         <td data-etiqueta="Materias">{{ $profesor->asignaciones_count }}</td>
-                        <td data-etiqueta="Estado">{{ $profesor->activo ? 'Activo' : 'De baja' }}</td>
+                        {{-- #61: etiqueta de estado en verde o rojo; el texto se mantiene (el color no es la única señal) --}}
+                        <td data-etiqueta="Estado">
+                            <span @class([
+                                'estado inline-block rounded-full px-2.5 py-0.5 text-sm font-semibold whitespace-nowrap',
+                                'estado-activo bg-exito-claro text-exito' => $profesor->activo,
+                                'estado-baja bg-error-claro text-error' => ! $profesor->activo,
+                            ])>{{ $profesor->activo ? 'Activo' : 'De baja' }}</span>
+                        </td>
                         <td data-etiqueta="Acciones">
                             <div class="flex flex-wrap items-center gap-x-1">
                             <button type="button" wire:click="$dispatch('abrir-formulario', { id: {{ $profesor->id }} })">Editar</button>
