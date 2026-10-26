@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ingresar · Campus N.E.P. y F.P. N.º 30</title>
+    <x-favicon />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
