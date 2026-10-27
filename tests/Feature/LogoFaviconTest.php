@@ -26,10 +26,11 @@ class LogoFaviconTest extends TestCase
 
     public function test_los_archivos_del_sello_y_del_favicon_existen_y_son_livianos(): void
     {
-        foreach (['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'img/sello-blanco.png'] as $archivo) {
+        foreach (['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'img/sello-blanco.png', 'img/sello.png'] as $archivo) {
             $this->assertFileExists(public_path($archivo));
         }
         $this->assertLessThan(30 * 1024, filesize(public_path('img/sello-blanco.png')));
+        $this->assertLessThan(30 * 1024, filesize(public_path('img/sello.png')));
     }
 
     public function test_el_sitio_publico_tiene_favicon_y_el_sello_en_el_encabezado_y_el_pie(): void
@@ -42,7 +43,8 @@ class LogoFaviconTest extends TestCase
 
         $encabezado = substr($html, strpos($html, '<header'), strpos($html, '</header>') - strpos($html, '<header'));
         $pie = substr($html, strpos($html, '<footer'), strpos($html, '</footer>') - strpos($html, '<footer'));
-        $this->assertStringContainsString(asset('img/sello-blanco.png'), $encabezado);
+        // #59: el encabezado es blanco y lleva el sello a color; el pie sigue azul con el sello blanco
+        $this->assertStringContainsString(asset('img/sello.png'), $encabezado);
         $this->assertStringContainsString(asset('img/sello-blanco.png'), $pie);
     }
 
