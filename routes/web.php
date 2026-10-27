@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\SedesController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\SitioController;
 use App\Models\User;
@@ -19,6 +19,13 @@ Route::get('/noticias/{slug}', [SitioController::class, 'noticia'])->name('notic
 Route::get('/oferta', [OfertaController::class, 'index'])->name('oferta');
 Route::get('/oferta/{curso}', [OfertaController::class, 'curso'])->whereNumber('curso')->name('oferta.curso');
 Route::get('/calendario', [OfertaController::class, 'calendario'])->name('calendario');
+
+// ---------- HU03 (#48): datos de sedes y sede más cercana (públicas, JSON para el mapa) ----------
+// throttle:30,1 = como máximo 30 pedidos por minuto desde la misma IP
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/sedes/datos', [SedesController::class, 'datos'])->name('sedes.datos');
+    Route::get('/sedes/cercanas', [SedesController::class, 'cercanas'])->name('sedes.cercanas');
+});
 
 // HU05: inicio de sesión. El nombre "login" es adonde Laravel manda a los invitados.
 Route::view('/login', 'auth.login')->middleware('guest')->name('login');

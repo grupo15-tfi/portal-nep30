@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+     // HU03 (#48): geocodificación de domicilios con Nominatim (OpenStreetMap)
+    'nominatim' => [
+        'url' => env('NOMINATIM_URL', 'https://nominatim.openstreetmap.org/search'),
+        'user_agent' => env('NOMINATIM_USER_AGENT', 'PortalNEP30/1.0 (TFI UTN FRRe; portal de la N.E.P. y F.P. N.º 30, Formosa)'),
+    ],
+    
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
