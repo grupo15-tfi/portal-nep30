@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('titulo', 'Inicio') · N.E.P. y F.P. N.º 30</title>
+    <x-favicon />
     <meta name="description" content="Núcleo de Educación Permanente y Formación Profesional N.º 30 «Hna. María Delgado Valero» (Formosa).">
 
     {{-- Si todavía no se compiló con npm run build, la página se ve sin estilos pero funciona (y las pruebas pasan) --}}
@@ -20,8 +21,10 @@
 
     <header class="bg-primario text-white">
         <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
-            <a href="{{ route('inicio') }}" class="font-titulos text-lg font-semibold leading-tight min-w-0">
-                N.E.P. y F.P. N.º 30
+            <a href="{{ route('inicio') }}" class="flex items-center gap-3 font-titulos text-lg font-semibold leading-tight min-w-0">
+                {{-- #56: sello del proyecto (versión blanca, para el fondo azul) --}}
+                <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-10 md:size-12 shrink-0">
+                <span class="min-w-0">N.E.P. y F.P. N.º 30</span>
             </a>
 
             @php
@@ -84,8 +87,11 @@
     </main>
 
     <footer class="bg-primario text-white">
-        <div class="mx-auto max-w-6xl px-4 py-6 flex flex-col gap-2 md:flex-row md:justify-between">
-            <p>Núcleo de Educación Permanente y Formación Profesional N.º 30 · Formosa</p>
+        <div class="mx-auto max-w-6xl px-4 py-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-12 shrink-0">
+                <p>Núcleo de Educación Permanente y Formación Profesional N.º 30 · Formosa</p>
+            </div>
             <nav aria-label="Enlaces del pie" class="flex gap-4">
                 <a href="{{ route('contacto') }}" class="underline">Contacto</a>
                 <a href="{{ route('privacidad') }}" class="underline">Política de privacidad</a>
