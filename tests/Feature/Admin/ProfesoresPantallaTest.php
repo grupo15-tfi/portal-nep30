@@ -234,6 +234,18 @@ class ProfesoresPantallaTest extends TestCase
         );
     }
 
+    public function test_el_estado_se_ve_en_verde_si_esta_activo_y_en_rojo_si_esta_de_baja(): void
+    {
+        // #61, observación de Aguayo en la revisión del Sprint 1: el texto se mantiene y el color lo acompaña
+        $baja = GuardarProfesor::ejecutar(['dni' => '30111222', 'apellido' => 'Zárate', 'nombre' => 'Inés', 'email' => 'ines.zarate@nep30.test', 'sede_id' => null]);
+        $baja->update(['activo' => false]);
+
+        $html = $this->actingAs($this->admin())->get('/admin/profesores')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/<span class="[^"]*estado-activo bg-exito-claro text-exito[^"]*">Activo<\/span>/', $html);
+        $this->assertMatchesRegularExpression('/<span class="[^"]*estado-baja bg-error-claro text-error[^"]*">De baja<\/span>/', $html);
+    }
+
     public function test_asignaciones_de_un_usuario_que_no_es_profesor_da_404(): void
     {
         $alumno = User::factory()->conRol('alumno')->create();
