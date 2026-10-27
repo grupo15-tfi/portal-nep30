@@ -42,7 +42,7 @@
             <p>Desde los {{ $curso->edad_minima }} años · Período {{ $curso->anio }}</p>
 
             @if ($curso->con_lista_espera)
-                <p class="font-semibold text-amber-800">{{ OfertaTexto::cupos($curso) }}</p>
+                <p class="font-semibold text-amber-700">{{ OfertaTexto::cupos($curso) }}</p>
                 <p class="text-texto-suave">Si te anotás, quedás en la lista por orden de llegada y te llaman cuando se libere un lugar.</p>
             @else
                 <p class="font-semibold text-exito">{{ OfertaTexto::cupos($curso) }}</p>

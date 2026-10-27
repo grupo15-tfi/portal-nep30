@@ -19,7 +19,7 @@
     <p class="text-texto-suave">{{ OfertaTexto::cursada($curso) }}</p>
 
     @if ($curso->con_lista_espera)
-        <p class="font-semibold text-amber-800">{{ OfertaTexto::cupos($curso) }}</p>
+        <p class="font-semibold text-amber-700">{{ OfertaTexto::cupos($curso) }}</p>
     @else
         <p class="font-semibold text-exito">{{ OfertaTexto::cupos($curso) }}</p>
     @endif
