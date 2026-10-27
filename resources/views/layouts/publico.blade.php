@@ -11,6 +11,8 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        {{-- Recursos de una sola página (ej.: Leaflet en el mapa de sedes, #49) --}}
+        @stack('vite')
     @endif
 </head>
 <body class="min-h-screen flex flex-col bg-white text-texto font-sans text-base leading-relaxed">
@@ -33,7 +35,7 @@
                     ['Inicio', route('inicio'), ['inicio']],
                     ['Historia', route('historia'), ['historia']],
                     ['Oferta educativa', route('oferta'), ['oferta', 'oferta.curso', 'calendario']], // HU02 (#44); el calendario se abre desde la oferta
-                    ['Sedes', '#', []],            // provisorio: HU03 (Sprint 2)
+                    ['Sedes', route('sedes.mapa'), ['sedes.mapa']], // HU03 (#49)
                     ['Noticias', route('noticias.index'), ['noticias.*']],
                     ['Contacto', route('contacto'), ['contacto']],
                 ];
