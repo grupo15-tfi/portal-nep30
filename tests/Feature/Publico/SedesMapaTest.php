@@ -6,8 +6,10 @@ use App\Http\Controllers\SedesController;
 use App\Models\Sede;
 use App\Services\Sedes\Distancia;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request as PedidoHttp;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
 use Tests\TestCase;
 
@@ -152,6 +154,63 @@ class SedesMapaTest extends TestCase
         $this->getJson(route('sedes.cercanas', ['domicilio' => '  av. 25 de mayo   1200 ']))->assertOk();
 
         Http::assertSentCount(1);
+    }
+
+    public function test_si_nominatim_no_responde_no_se_guarda_en_la_cache_y_queda_en_el_log(): void
+    {
+        Log::spy();
+
+        $intentos = 0;
+        Http::fake(function () use (&$intentos) {
+            if (++$intentos === 1) {
+                throw new ConnectionException('cURL error 60: SSL certificate problem for https://nominatim.openstreetmap.org/search?q=av.%2025%20de%20mayo');
+            }
+
+            return Http::response([['lat' => '-26.1775', 'lon' => '-58.1781']]);
+        });
+
+        // Primer pedido: Nominatim no responde → «no encontrado», pero no queda en la caché
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Av. 25 de Mayo 1200']))
+            ->assertStatus(422)
+            ->assertExactJson(['message' => SedesController::NO_ENCONTRADO]);
+
+        // El log avisa del problema, sin el domicilio (Ley 25.326)
+        Log::shouldHaveReceived('warning')->once()->withArgs(fn (string $mensaje, array $contexto = []) =>
+            str_contains($mensaje, 'Nominatim no respondió')
+            && ! str_contains(mb_strtolower(json_encode($contexto)), 'mayo'));
+
+        // Segundo pedido: Nominatim volvió y se busca de nuevo
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Av. 25 de Mayo 1200']))
+            ->assertOk()
+            ->assertJsonPath('sedes.0.nombre', 'Sede Central (prueba)');
+    }
+
+    public function test_un_error_de_nominatim_tampoco_se_guarda_en_la_cache(): void
+    {
+        Http::fake([
+            'nominatim.openstreetmap.org/*' => Http::sequence()
+                ->push('Servicio no disponible', 503)
+                ->push([['lat' => (string) self::CENTRAL['lat'], 'lon' => (string) self::CENTRAL['lng']]]),
+        ]);
+
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Av. 25 de Mayo 1200']))->assertStatus(422);
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Av. 25 de Mayo 1200']))->assertOk();
+
+        Http::assertSentCount(2);
+    }
+
+    public function test_un_domicilio_no_encontrado_se_guarda_solo_un_dia(): void
+    {
+        $this->nominatimResponde(null);
+
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Calle que no existe 99999']))->assertStatus(422);
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Calle que no existe 99999']))->assertStatus(422);
+        Http::assertSentCount(1); // el segundo sale de la caché
+
+        $this->travel(2)->days();
+
+        $this->getJson(route('sedes.cercanas', ['domicilio' => 'Calle que no existe 99999']))->assertStatus(422);
+        Http::assertSentCount(2); // venció la caché de «no encontrado»: se vuelve a preguntar
     }
 
     // ---------- Límite de pedidos ----------
