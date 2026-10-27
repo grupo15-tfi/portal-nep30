@@ -10,6 +10,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request as PedidoHttp;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Sleep;
 use Tests\TestCase;
 
@@ -222,5 +223,67 @@ class SedesMapaTest extends TestCase
         }
 
         $this->getJson(route('sedes.datos'))->assertStatus(429);
+    }
+
+    // ---------- Página del mapa (#49, front) ----------
+    // La lógica (distancias, domicilios) la prueban las pruebas de arriba; acá, que la página tenga sus piezas.
+    // withoutVite(): la página no depende de que se haya corrido npm run build.
+
+    public function test_la_pagina_del_mapa_responde_y_tiene_sus_elementos(): void
+    {
+        $this->withoutVite();
+        $html = $this->get(route('sedes.mapa'))->assertOk()->assertSee('Sedes y anexos')->getContent();
+
+        // El script del mapa sabe a qué rutas del contrato (#45) pedir los datos
+        $this->assertStringContainsString('data-url-datos="'.route('sedes.datos').'"', $html);
+        $this->assertStringContainsString('data-url-cercanas="'.route('sedes.cercanas').'"', $html);
+        $this->assertStringContainsString('id="mapa-sedes"', $html);
+
+        // Ubicación como opción principal y domicilio como alternativa
+        $this->assertStringContainsString('Usar mi ubicación actual', $html);
+        $this->assertStringContainsString('<label for="domicilio"', $html);
+        $this->assertStringContainsString('No la guardamos', $html);
+        $this->assertStringContainsString('aproximadas, en línea recta', $html);
+    }
+
+    public function test_la_lista_muestra_las_sedes_activas_con_su_enlace_a_la_oferta(): void
+    {
+        $this->withoutVite();
+        $inactiva = Sede::create(['nombre' => 'Anexo cerrado (prueba)', 'tipo' => 'anexo', 'direccion' => 'Calle 1',
+            'localidad' => 'Formosa', 'latitud' => -26.17, 'longitud' => -58.17, 'activo' => false]);
+
+        $response = $this->get(route('sedes.mapa'))->assertOk()
+            ->assertSee('Sede Central (prueba)')
+            ->assertSee('Anexo Barrio Norte (prueba)')
+            ->assertSee('Sede central')
+            ->assertDontSee('Anexo cerrado (prueba)');
+
+        $central = Sede::where('nombre', 'Sede Central (prueba)')->firstOrFail();
+        $response->assertSee(route('oferta', ['sede' => $central->id]), false)
+            ->assertSee('Teléfono:')
+            ->assertDontSee('data-sede-id="'.$inactiva->id.'"', false);
+    }
+
+    public function test_el_selector_de_localidades_usa_la_ruta_de_castillo_solo_si_existe(): void
+    {
+        $this->withoutVite();
+        $html = $this->get(route('sedes.mapa'))->assertOk()->getContent();
+
+        if (Route::has('sedes.localidades')) {
+            $this->assertStringContainsString('data-url-localidades="'.route('sedes.localidades').'"', $html);
+        } else {
+            $this->assertStringNotContainsString('data-url-localidades', $html);
+        }
+    }
+
+    public function test_el_menu_publico_enlaza_sedes_y_la_marca_como_actual(): void
+    {
+        $this->withoutVite();
+        $html = $this->get(route('sedes.mapa'))->assertOk()->getContent();
+
+        preg_match_all('/<a href="'.preg_quote(route('sedes.mapa'), '/').'"\s+aria-current="page"/', $html, $m);
+        $this->assertCount(2, $m[0], 'El enlace «Sedes» del menú (escritorio y celular) debe estar marcado');
+
+        $this->get(route('inicio'))->assertSee('href="'.route('sedes.mapa').'"', false);
     }
 }
