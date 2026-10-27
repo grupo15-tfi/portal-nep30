@@ -25,13 +25,14 @@
             </a>
 
             @php
+                // [texto, url, rutas en las que el enlace queda marcado como la sección actual]
                 $menu = [
-                    ['Inicio', route('inicio')],
-                    ['Historia', route('historia')],
-                    ['Oferta educativa', route('oferta')], // HU02 (#44); el calendario se abre desde la oferta
-                    ['Sedes', '#'],            // provisorio: HU03 (Sprint 2)
-                    ['Noticias', route('noticias.index')],
-                    ['Contacto', route('contacto')],
+                    ['Inicio', route('inicio'), ['inicio']],
+                    ['Historia', route('historia'), ['historia']],
+                    ['Oferta educativa', route('oferta'), ['oferta', 'oferta.curso', 'calendario']], // HU02 (#44); el calendario se abre desde la oferta
+                    ['Sedes', '#', []],            // provisorio: HU03 (Sprint 2)
+                    ['Noticias', route('noticias.index'), ['noticias.*']],
+                    ['Contacto', route('contacto'), ['contacto']],
                 ];
 
                 // #32: con sesión iniciada se muestra «Mi panel» (al inicio del panel de su rol) en lugar de «Ingresar».
@@ -41,8 +42,10 @@
 
             {{-- Escritorio --}}
             <nav aria-label="Menú principal" class="hidden md:flex items-center gap-5">
-                @foreach ($menu as [$texto, $url])
-                    <a href="{{ $url }}" class="hover:underline focus:underline">{{ $texto }}</a>
+                @foreach ($menu as [$texto, $url, $rutas])
+                    @php $actual = $rutas && request()->routeIs(...$rutas); @endphp
+                    <a href="{{ $url }}" @if ($actual) aria-current="page" @endif
+                       @class(['hover:underline focus:underline', 'font-bold underline decoration-2 underline-offset-8' => $actual])>{{ $texto }}</a>
                 @endforeach
                 @auth
                     @if ($panel)
@@ -58,8 +61,10 @@
             <details class="md:hidden relative">
                 <summary class="cursor-pointer list-none rounded border border-white/60 px-3 py-1.5">Menú</summary>
                 <nav aria-label="Menú principal" class="absolute right-0 mt-2 w-56 rounded bg-white text-texto shadow-lg py-2 z-40">
-                    @foreach ($menu as [$texto, $url])
-                        <a href="{{ $url }}" class="block px-4 py-2 hover:bg-primario-claro">{{ $texto }}</a>
+                    @foreach ($menu as [$texto, $url, $rutas])
+                        @php $actual = $rutas && request()->routeIs(...$rutas); @endphp
+                        <a href="{{ $url }}" @if ($actual) aria-current="page" @endif
+                           @class(['block px-4 py-2 hover:bg-primario-claro', 'border-l-4 border-primario bg-primario-claro font-bold text-primario' => $actual])>{{ $texto }}</a>
                     @endforeach
                     @auth
                         @if ($panel)
