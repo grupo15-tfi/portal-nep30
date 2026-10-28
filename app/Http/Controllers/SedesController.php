@@ -52,6 +52,28 @@ class SedesController extends Controller
         return response()->json($sedes);
     }
 
+    /**
+     * GET /sedes/localidades → sedes.localidades (HU03, #50)
+     * Alternativa cuando no se encuentra el domicilio: el aspirante elige su localidad.
+     * Una fila por localidad con sedes activas; el punto es el promedio de las coordenadas de sus sedes.
+     */
+    public function localidades(): JsonResponse
+    {
+        $localidades = DB::table('sedes')
+            ->where('activo', true)
+            ->selectRaw('localidad, AVG(latitud) AS lat, AVG(longitud) AS lng')
+            ->groupBy('localidad')
+            ->orderBy('localidad')
+            ->get()
+            ->map(fn ($fila) => [
+                'localidad' => $fila->localidad,
+                'lat'       => round((float) $fila->lat, 7),
+                'lng'       => round((float) $fila->lng, 7),
+            ]);
+
+        return response()->json($localidades);
+    }
+    
     /** GET /sedes/cercanas?lat=..&lng=.. o ?domicilio=.. → sedes.cercanas */
     public function cercanas(Request $request, Geocodificador $geocodificador): JsonResponse
     {
