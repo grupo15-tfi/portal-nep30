@@ -134,20 +134,10 @@ class OfertaTest extends TestCase
         $this->get('/oferta/999999')->assertNotFound();
     }
 
-    public function test_sin_la_ruta_de_preinscripcion_la_pagina_funciona_y_avisa(): void
-    {
-        $this->assertFalse(Route::has('preinscripcion.crear'));
-
-        $this->get(route('oferta.curso', $this->curso('Operador de Informática para la Administración y Gestión')->id))
-            ->assertOk()
-            ->assertSee('La preinscripción en línea va a estar disponible pronto');
-    }
-
     public function test_con_la_ruta_de_hu04_aparece_el_enlace_preinscribirme(): void
     {
-        // HU04 (#52) define preinscripcion.crear → GET /preinscripcion/{curso}; acá se simula hasta que exista
-        Route::get('/preinscripcion/{curso}', fn () => 'ok')->name('preinscripcion.crear');
-        app('router')->getRoutes()->refreshNameLookups();
+        // HU04 (#52) ya define preinscripcion.crear → GET /preinscripcion/{curso}: el aviso «disponible pronto» no sale más
+        $this->assertTrue(Route::has('preinscripcion.crear'));
 
         $info = $this->curso('Operador de Informática para la Administración y Gestión');
         $pelu = $this->curso('Peluquería');
@@ -158,6 +148,7 @@ class OfertaTest extends TestCase
 
         $this->get(route('oferta.curso', $info->id))->assertSee('Preinscribirme')->assertSee(route('preinscripcion.crear', $info->id), false);
         $this->get(route('oferta.curso', $pelu->id))->assertSee('Anotarme en la lista de espera');
+        $this->get(route('oferta.curso', $info->id))->assertDontSee('La preinscripción en línea va a estar disponible pronto');
     }
 
     // ---------- Calendario ----------
