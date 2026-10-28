@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\SedesController;
+use App\Http\Controllers\SedesMapaController;
 use App\Http\Controllers\SitioController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,6 +21,9 @@ Route::get('/noticias/{slug}', [SitioController::class, 'noticia'])->name('notic
 Route::get('/oferta', [OfertaController::class, 'index'])->name('oferta');
 Route::get('/oferta/{curso}', [OfertaController::class, 'curso'])->whereNumber('curso')->name('oferta.curso');
 Route::get('/calendario', [OfertaController::class, 'calendario'])->name('calendario');
+
+// ---------- HU03 (#49): página del mapa de sedes (pública) ----------
+Route::get('/sedes', SedesMapaController::class)->name('sedes.mapa');
 
 // ---------- HU03 (#48): datos de sedes y sede más cercana (públicas, JSON para el mapa) ----------
 // throttle:30,1 = como máximo 30 pedidos por minuto desde la misma IP

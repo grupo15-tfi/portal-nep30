@@ -66,3 +66,12 @@
     .tabla-apilada td { @apply flex gap-3 border-0 px-0 py-1; }
     .tabla-apilada td[data-etiqueta]::before { content: attr(data-etiqueta); @apply w-28 shrink-0 font-semibold; }
 }
+
+/* HU03 (#49): mapa de sedes (Leaflet) */
+/* #mapa-sedes gana a los estilos de leaflet.css, que se cargan después */
+#mapa-sedes.leaflet-container { font-family: inherit; font-size: 0.875rem; }
+#mapa-sedes .leaflet-popup-content { font-size: 0.9375rem; line-height: 1.45; margin: 0.875rem 1rem; }
+#mapa-sedes .leaflet-popup-content p { margin: 0.125rem 0; }
+#mapa-sedes a { color: var(--color-primario); }
+.marcador-sede { background: none; border: 0; }
+.marcador-sede:focus-visible { outline: 3px solid var(--color-primario); outline-offset: 2px; border-radius: 50%; }
