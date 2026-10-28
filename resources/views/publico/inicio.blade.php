@@ -14,7 +14,7 @@
 @section('contenido')
     {{-- Portada --}}
     <section aria-labelledby="titulo-inicio" class="mb-12 rounded-xl bg-primario-claro px-5 py-8 md:px-10 md:py-12">
-        <div @class(['grid gap-8 items-center', 'md:grid-cols-2' => $seccion->imagen_ruta])>
+        <div @class(['grid gap-8 items-center', 'md:grid-cols-2' => $seccion->imagen_ruta || $seccion->video_url])>
             <div>
                 <p class="mb-3 text-sm font-bold uppercase tracking-wider text-primario">Formación profesional · Educación permanente · Formosa</p>
                 <h1 id="titulo-inicio" class="font-titulos text-3xl md:text-5xl font-semibold leading-tight text-primario mb-4">
@@ -26,10 +26,15 @@
                     <a href="{{ $urlSedes }}" class="inline-flex min-h-11 items-center justify-center rounded border-2 border-primario bg-white px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Encontrar mi sede más cercana</a>
                 </p>
             </div>
-            {{-- Espacio para una foto real de la sede, con autorización (Ley 25.326). Sin foto, no se muestra nada. --}}
-            @if ($seccion->imagen_ruta)
-                <img src="{{ asset('storage/'.$seccion->imagen_ruta) }}" alt="Sede del N.E.P. y F.P. N.º 30"
-                     width="640" height="400" decoding="async" class="w-full rounded-lg object-cover aspect-[16/10]">
+            {{-- Foto real de la sede, con autorización (Ley 25.326), y video de YouTube (HU10). Sin ninguno, no se muestra nada. --}}
+            @if ($seccion->imagen_ruta || $seccion->video_url)
+                <div class="flex flex-col gap-4">
+                    @if ($seccion->imagen_ruta)
+                        <img src="{{ asset('storage/'.$seccion->imagen_ruta) }}" alt="Sede del N.E.P. y F.P. N.º 30"
+                             width="640" height="400" decoding="async" class="w-full rounded-lg object-cover aspect-[16/10]">
+                    @endif
+                    <x-video-youtube :url="$seccion->video_url" :titulo="$seccion->titulo" class="mb-0" />
+                </div>
             @endif
         </div>
     </section>

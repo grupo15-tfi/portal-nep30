@@ -68,6 +68,10 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/profesores', 'admin.profesores')->name('profesores.index');
     Route::get('/profesores/{profesor}/asignaciones', fn (User $profesor) => view('admin.profesores-asignaciones', ['profesor' => $profesor]))
         ->name('profesores.asignaciones');
+    // HU10 (#75): noticias, contenidos del sitio y calendario académico
+    Route::view('/noticias', 'admin.noticias')->name('noticias');
+    Route::view('/contenidos', 'admin.contenidos')->name('contenidos');
+    Route::view('/calendario', 'admin.calendario')->name('calendario');
     
 });
 
