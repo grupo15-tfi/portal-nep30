@@ -23,6 +23,9 @@ Route::get('/oferta', [OfertaController::class, 'index'])->name('oferta');
 Route::get('/oferta/{curso}', [OfertaController::class, 'curso'])->whereNumber('curso')->name('oferta.curso');
 Route::get('/calendario', [OfertaController::class, 'calendario'])->name('calendario');
 
+// ---------- HU04 (#52): formulario de preinscripción (público). Lo guarda Preinscribir de #51. ----------
+Route::get('/preinscripcion/{curso}', [OfertaController::class, 'preinscripcion'])->whereNumber('curso')->name('preinscripcion.crear');
+
 // ---------- HU03 (#49): página del mapa de sedes (pública) ----------
 Route::get('/sedes', SedesMapaController::class)->name('sedes.mapa');
 
