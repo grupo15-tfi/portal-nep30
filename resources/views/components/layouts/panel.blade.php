@@ -32,6 +32,7 @@
         ],
         'profesor' => [
             ['Inicio', 'profesor.inicio'],
+            ['Mis materias', 'profesor.materias'],          // HU08 (#54)
             ['Mis cursos', 'profesor.cursos'],              // HU11
             ['Asistencia', 'profesor.asistencia'],          // HU13
             ['Tareas', 'profesor.tareas'],                  // HU12
