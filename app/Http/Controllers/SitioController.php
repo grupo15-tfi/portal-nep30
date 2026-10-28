@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Noticia;
 use App\Models\Seccion;
+use Illuminate\Support\Facades\DB;
 
 /**
  * HU01 (#11): sitio público institucional. No requiere iniciar sesión.
@@ -13,9 +14,17 @@ class SitioController extends Controller
 {
     public function inicio()
     {
+        // #60: cursos vigentes de la oferta (HU02). La vista v_oferta_publica ya filtra lo inactivo.
+        $oferta = DB::table('v_oferta_publica')->orderBy('plan')->orderByRaw("FIELD(turno, 'mañana', 'tarde', 'noche')")->get();
+
         return view('publico.inicio', [
-            'seccion'  => Seccion::where('clave', 'inicio')->firstOrFail(),
-            'noticias' => Noticia::publicadas()->limit(3)->get(),
+            'seccion'      => Seccion::where('clave', 'inicio')->firstOrFail(),
+            'noticias'     => Noticia::publicadas()->limit(3)->get(),
+            // Hasta 4 cursos de formación profesional, uno por plan (el primero de cada plan)
+            'cursos'       => $oferta->where('tipo', 'formacion_profesional')->unique('plan')->take(4)->values(),
+            // Planes de terminalidad primaria, para la franja de abajo
+            'terminalidad' => $oferta->where('tipo', 'terminalidad')->pluck('plan')->unique()->values(),
+            'anio'         => $oferta->first()?->anio ?? now()->year,
         ]);
     }
 
