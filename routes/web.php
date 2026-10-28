@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\Profesor\MisMateriasController;
 use App\Http\Controllers\SedesController;
 use App\Http\Controllers\SedesMapaController;
 use App\Http\Controllers\SitioController;
@@ -67,6 +68,8 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
 
 Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU08 (#54): las materias que tiene asignadas
+    Route::get('/materias', MisMateriasController::class)->name('materias');
     // Historias del rol Profesor: sus rutas van acá
 });
 
