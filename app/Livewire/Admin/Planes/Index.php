@@ -14,6 +14,9 @@ use Livewire\Component;
  */
 class Index extends Component
 {
+    // #73: los formularios se abren en la ventana emergente (como Profesores)
+    public bool $ventanaPlan = false;
+
     // ---------- Plan ----------
     public ?int $planId = null;
 
@@ -106,6 +109,13 @@ class Index extends Component
         $this->limpiarPlan();
     }
 
+    /** «Nuevo plan»: abre la ventana con el formulario vacío */
+    public function nuevoPlan(): void
+    {
+        $this->limpiarPlan();
+        $this->ventanaPlan = true;
+    }
+
     public function editarPlan(int $id): void
     {
         $plan = PlanEstudio::findOrFail($id);
@@ -122,6 +132,7 @@ class Index extends Component
         $this->asistenciaMinima = (string) $plan->asistencia_minima;
 
         $this->resetValidation();
+        $this->ventanaPlan = true;
     }
 
     /** Activa o desactiva el plan. Desactivado, sus cursos salen de la oferta pública. */
@@ -134,15 +145,17 @@ class Index extends Component
         session()->flash('ok', $plan->activo ? 'Plan activado.' : 'Plan desactivado.');
     }
 
+    /** Cierra la ventana del plan y vacía el formulario (Cancelar, Esc o después de guardar) */
     public function limpiarPlan(): void
     {
-        $this->reset(['planId', 'nombre', 'tipo', 'descripcion', 'duracionMeses', 'cantidadCiclos',
+        $this->reset(['ventanaPlan', 'planId', 'nombre', 'tipo', 'descripcion', 'duracionMeses', 'cantidadCiclos',
                       'resolucion', 'edadMinima', 'notaAprobacion', 'asistenciaMinima']);
         $this->resetValidation();
     }
 
     // ================= Materias =================
 
+    /** «Materias»: abre la ventana con las materias del plan y el formulario para agregar o editar */
     public function verMaterias(int $planId): void
     {
         $this->planSeleccionado = PlanEstudio::findOrFail($planId)->id;
@@ -189,6 +202,14 @@ class Index extends Component
         $this->resetValidation();
     }
 
+    /** Cierra la ventana de materias (Cerrar o Esc) */
+    public function cerrarMaterias(): void
+    {
+        $this->planSeleccionado = null;
+        $this->limpiarMateria();
+    }
+
+    /** Vacía el formulario de materia (la ventana de materias sigue abierta) */
     public function limpiarMateria(): void
     {
         $this->reset(['materiaId', 'materiaNombre', 'materiaCiclo', 'materiaCarga', 'materiaObligatoria']);
