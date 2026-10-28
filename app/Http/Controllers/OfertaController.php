@@ -69,6 +69,15 @@ class OfertaController extends Controller
         ]);
     }
 
+    /** GET /preinscripcion/{curso} → preinscripcion.crear (HU04, #52): solo cursos de la oferta pública */
+    public function preinscripcion(int $curso)
+    {
+        $oferta = DB::table('v_oferta_publica')->where('curso_id', $curso)->first();
+        abort_if(! $oferta, 404);
+
+        return view('publico.preinscripcion.crear', ['curso' => $oferta]);
+    }
+
     /** GET /calendario (?mes=AAAA-MM): eventos públicos del mes */
     public function calendario(Request $request)
     {
