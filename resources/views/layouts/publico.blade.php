@@ -21,12 +21,16 @@
         Saltar al contenido
     </a>
 
-    <header class="bg-primario text-white">
+    {{-- #59: encabezado blanco con el sello (aprobado por Aguayo el 26/10). En el celular, nombre corto y botón «Menú». --}}
+    <header class="bg-white text-texto border-b border-borde">
         <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
-            <a href="{{ route('inicio') }}" class="flex items-center gap-3 font-titulos text-lg font-semibold leading-tight min-w-0">
-                {{-- #56: sello del proyecto (versión blanca, para el fondo azul) --}}
-                <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-10 md:size-12 shrink-0">
-                <span class="min-w-0">N.E.P. y F.P. N.º 30</span>
+            <a href="{{ route('inicio') }}" class="flex items-center gap-3 min-w-0 text-primario">
+                <img src="{{ asset('img/sello.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-11 lg:size-12 shrink-0">
+                <span class="min-w-0 leading-tight">
+                    <span class="font-titulos text-lg font-semibold lg:hidden">N.E.P. y F.P. N.º 30</span>
+                    <span class="hidden lg:block font-titulos text-base font-semibold">Núcleo de Educación Permanente<br>y Formación Profesional N.º 30</span>
+                    <span class="block text-xs lg:text-sm text-texto-suave">«Hna. María Delgado Valero»</span>
+                </span>
             </a>
 
             @php
@@ -46,26 +50,26 @@
             @endphp
 
             {{-- Escritorio --}}
-            <nav aria-label="Menú principal" class="hidden md:flex items-center gap-5">
+            <nav aria-label="Menú principal" class="hidden lg:flex items-center gap-5">
                 @foreach ($menu as [$texto, $url, $rutas])
                     @php $actual = $rutas && request()->routeIs(...$rutas); @endphp
                     <a href="{{ $url }}" @if ($actual) aria-current="page" @endif
-                       @class(['hover:underline focus:underline', 'font-bold underline decoration-2 underline-offset-8' => $actual])>{{ $texto }}</a>
+                       @class(['py-1 hover:text-primario hover:underline focus:underline', 'font-bold text-primario underline decoration-2 underline-offset-8' => $actual])>{{ $texto }}</a>
                 @endforeach
                 @auth
                     @if ($panel)
-                        <a href="{{ $panel }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Mi panel</a>
+                        <a href="{{ $panel }}" class="rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Mi panel</a>
                     @endif
                 @endauth
                 @guest
-                    <a href="{{ route('login') }}" class="rounded bg-white text-primario px-3 py-1.5 font-semibold">Ingresar</a>
+                    <a href="{{ route('login') }}" class="rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
                 @endguest
             </nav>
 
-            {{-- Celular: menú desplegable sin JavaScript --}}
-            <details class="md:hidden relative">
-                <summary class="cursor-pointer list-none rounded border border-white/60 px-3 py-1.5">Menú</summary>
-                <nav aria-label="Menú principal" class="absolute right-0 mt-2 w-56 rounded bg-white text-texto shadow-lg py-2 z-40">
+            {{-- Celular: menú desplegable sin JavaScript. <details> se abre y se cierra con Enter o la barra espaciadora. --}}
+            <details id="menu-celular" class="lg:hidden relative">
+                <summary class="cursor-pointer list-none rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Menú</summary>
+                <nav aria-label="Menú principal" class="absolute right-0 mt-2 w-60 rounded border border-borde bg-white text-texto shadow-lg py-2 z-40">
                     @foreach ($menu as [$texto, $url, $rutas])
                         @php $actual = $rutas && request()->routeIs(...$rutas); @endphp
                         <a href="{{ $url }}" @if ($actual) aria-current="page" @endif
@@ -88,7 +92,8 @@
         @yield('contenido')
     </main>
 
-    <footer class="bg-primario text-white">
+    {{-- #59: pie en azul oscuro (navy-900), como en el v4,1 --}}
+    <footer class="bg-navy-900 text-white">
         <div class="mx-auto max-w-6xl px-4 py-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-3">
                 <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-12 shrink-0">
