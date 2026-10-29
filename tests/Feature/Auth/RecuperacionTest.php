@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Actions\Profesores\CambiarEstadoProfesor;
 use App\Livewire\Auth\OlvideContrasena;
 use App\Livewire\Auth\RestablecerContrasena;
 use App\Models\User;
@@ -139,5 +140,49 @@ class RecuperacionTest extends TestCase
 
         $this->assertStringContainsString('Restablecé tu contraseña', (new NotificacionRestablecer('t'))->toMail($usuario)->subject);
         $this->assertStringContainsString('Creá tu contraseña', (new CrearContrasena('t'))->toMail($usuario)->subject);
+    }
+
+    // ---------- #28: enlace de un usuario dado de baja ----------
+
+    private function profesor(array $datos = []): User
+    {
+        return User::factory()->conRol('profesor')->create(array_merge(['password' => 'Clave1234'], $datos));
+    }
+
+    public function test_un_usuario_inactivo_no_puede_usar_un_enlace_valido(): void
+    {
+        $usuario = $this->profesor(['activo' => false]);
+        $token = Password::broker()->createToken($usuario);
+
+        $this->restablecer($usuario, $token)
+            ->assertHasErrors('email')
+            ->assertSee('El enlace no es válido o ya venció')
+            ->assertSet('listo', false)
+            ->assertDontSee('Tu contraseña se cambió');
+
+        $this->assertTrue(Hash::check('Clave1234', $usuario->fresh()->password)); // no cambió
+    }
+
+    public function test_dar_de_baja_borra_el_enlace_pendiente(): void
+    {
+        $profesor = $this->profesor();
+        Password::broker()->createToken($profesor);
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => $profesor->email]);
+
+        CambiarEstadoProfesor::ejecutar($profesor, false);
+
+        $this->assertDatabaseMissing('password_reset_tokens', ['email' => $profesor->email]);
+    }
+
+    public function test_volver_a_activar_no_toca_enlaces_ni_contrasena(): void
+    {
+        $profesor = $this->profesor(['activo' => false]);
+        Password::broker()->createToken($profesor);
+
+        CambiarEstadoProfesor::ejecutar($profesor, true);
+
+        $this->assertTrue($profesor->fresh()->activo);
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => $profesor->email]);
+        $this->assertTrue(Hash::check('Clave1234', $profesor->fresh()->password));
     }
 }

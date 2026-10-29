@@ -9,12 +9,13 @@
     @endif
 
     <div class="mb-4 max-w-md">
-        <label for="buscar">Buscar por DNI, apellido o correo</label>
-        <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: DNI, apellido o @gmail">
+        <label for="buscar">Buscar por DNI, nombre, apellido o correo</label>
+        <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: DNI, nombre, apellido o @gmail">
     </div>
 
+    {{-- En el celular cada fila se ve como tarjeta (tabla-apilada en app.css): data-etiqueta = nombre de la columna --}}
     <div class="overflow-x-auto">
-        <table>
+        <table class="tabla-apilada">
             <thead>
                 <tr>
                     <th>Apellido y nombre</th>
@@ -29,19 +30,28 @@
             <tbody>
                 @forelse ($profesores as $profesor)
                     <tr wire:key="profesor-{{ $profesor->id }}">
-                        <td>{{ $profesor->nombreCompleto() }}</td>
-                        <td>{{ $profesor->dni }}</td>
-                        <td class="break-all">{{ $profesor->email }}</td>
-                        <td>{{ $sedes[$profesor->sede_id] ?? '—' }}</td>
-                        <td>{{ $profesor->asignaciones_count }}</td>
-                        <td>{{ $profesor->activo ? 'Activo' : 'De baja' }}</td>
-                        <td>
+                        <td data-etiqueta="Apellido y nombre">{{ $profesor->nombreCompleto() }}</td>
+                        <td data-etiqueta="DNI">{{ $profesor->dni }}</td>
+                        <td data-etiqueta="Correo" class="break-all">{{ $profesor->email }}</td>
+                        <td data-etiqueta="Sede">{{ $sedes[$profesor->sede_id] ?? '—' }}</td>
+                        <td data-etiqueta="Materias">{{ $profesor->asignaciones_count }}</td>
+                        {{-- #61: etiqueta de estado en verde o rojo; el texto se mantiene (el color no es la única señal) --}}
+                        <td data-etiqueta="Estado">
+                            <span @class([
+                                'estado inline-block rounded-full px-2.5 py-0.5 text-sm font-semibold whitespace-nowrap',
+                                'estado-activo bg-exito-claro text-exito' => $profesor->activo,
+                                'estado-baja bg-error-claro text-error' => ! $profesor->activo,
+                            ])>{{ $profesor->activo ? 'Activo' : 'De baja' }}</span>
+                        </td>
+                        <td data-etiqueta="Acciones">
+                            <div class="flex flex-wrap items-center gap-x-1">
                             <button type="button" wire:click="$dispatch('abrir-formulario', { id: {{ $profesor->id }} })">Editar</button>
-                            <a href="{{ route('admin.profesores.asignaciones', $profesor) }}" class="inline-block mb-1 mr-1 text-sm font-semibold text-primario underline">Materias</a>
+                            <a href="{{ route('admin.profesores.asignaciones', $profesor) }}" class="inline-block mb-1 mr-1 rounded border border-primario px-3 py-1.5 text-sm font-semibold text-primario hover:bg-primario-claro">Materias</a>
                             <button type="button" wire:click="cambiarEstado({{ $profesor->id }})"
                                     wire:confirm="¿Seguro que querés {{ $profesor->activo ? 'dar de baja' : 'dar de alta' }} a {{ $profesor->nombreCompleto() }}?">
                                 {{ $profesor->activo ? 'Dar de baja' : 'Dar de alta' }}
                             </button>
+                            </div>
                         </td>
                     </tr>
                 @empty

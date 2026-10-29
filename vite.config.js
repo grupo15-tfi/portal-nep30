@@ -6,7 +6,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // mapa-sedes.js lleva Leaflet y se carga solo en la página de sedes (#49)
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/mapa-sedes.js'],
             refresh: true,
             // Fuentes del logo: Fraunces (títulos) y Nunito (texto)
             fonts: [

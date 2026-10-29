@@ -91,4 +91,102 @@ class SitioTest extends TestCase
             ->assertSee('<html lang="es">', false)
             ->assertSee(route('login'), false);
     }
+
+    // ---------- #32: «Mi panel» cuando hay sesión iniciada ----------
+
+    public function test_un_invitado_ve_ingresar_y_no_mi_panel(): void
+    {
+        $this->get('/')
+            ->assertSee('Ingresar')
+            ->assertSee(route('login'), false)
+            ->assertDontSee('Mi panel');
+    }
+
+    public static function roles(): array
+    {
+        return [
+            'administrador' => ['administrador', 'admin.inicio'],
+            'profesor'      => ['profesor', 'profesor.inicio'],
+            'alumno'        => ['alumno', 'alumno.inicio'],
+            'auditor'       => ['auditor', 'auditor.inicio'],
+        ];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('roles')]
+    public function test_con_sesion_iniciada_ve_mi_panel_con_el_enlace_de_su_rol(string $rol, string $ruta): void
+    {
+        $usuario = User::role($rol)->firstOrFail();
+
+        // En el menú de escritorio y en el del celular: el enlace aparece dos veces
+        $respuesta = $this->actingAs($usuario)->get('/')
+            ->assertSee('Mi panel')
+            ->assertDontSee(route('login'), false);
+
+        $this->assertSame(2, substr_count($respuesta->getContent(), 'href="'.route($ruta).'"'));
+    }
+
+    public function test_mi_panel_tambien_aparece_en_las_otras_paginas_publicas(): void
+    {
+        $alumno = User::role('alumno')->firstOrFail();
+
+        foreach (['historia', 'contacto', 'privacidad', 'noticias.index'] as $ruta) {
+            $this->actingAs($alumno)->get(route($ruta))
+                ->assertOk()
+                ->assertSee('Mi panel')
+                ->assertSee(route('alumno.inicio'), false);
+        }
+    }
+
+    public function test_un_usuario_sin_rol_no_ve_mi_panel(): void
+    {
+        $sinRol = User::factory()->create();
+
+        $this->actingAs($sinRol)->get('/')
+            ->assertOk()
+            ->assertDontSee('Mi panel');
+    }
+    // ---------- #60: Inicio rediseñado, sin el lema ----------
+
+    public function test_la_portada_no_tiene_el_lema_y_lleva_a_la_oferta_y_a_las_sedes(): void
+    {
+        $this->get('/')->assertOk()
+            ->assertDontSee('Tú puedes lograrlo')
+            ->assertDontSee('TE AYUDAMOS')
+            ->assertSee('Formación profesional y terminalidad primaria en Formosa')
+            ->assertSee('Ver oferta educativa')
+            ->assertSee('Encontrar mi sede más cercana')
+            ->assertSee('Preinscribite en línea');
+    }
+
+    public function test_el_inicio_muestra_solo_cursos_vigentes_con_sus_cupos(): void
+    {
+        // Datos de prueba: Peluquería sin cupo (lista de espera) e Informática con cupos; Alfabetización es terminalidad
+        $this->get('/')->assertOk()
+            ->assertSee('¿Qué querés estudiar?')
+            ->assertSee('Peluquería')
+            ->assertSee('Sin cupo: Lista de espera')
+            ->assertSee('Operador de Informática para la Administración y Gestión')
+            ->assertSee('cupos disponibles')
+            ->assertSee('Terminalidad primaria para adultos');
+
+        // Un curso inactivo deja de aparecer
+        \App\Models\Curso::where('plan_id', \App\Models\PlanEstudio::where('nombre', 'Peluquería')->value('id'))->update(['estado' => 'inactivo']);
+        $this->get('/')->assertDontSee('Peluquería');
+    }
+
+    public function test_el_inicio_muestra_hasta_tres_noticias_publicadas_y_un_mensaje_si_no_hay(): void
+    {
+        $this->noticia(['titulo' => 'Noticia reciente uno']);
+        $this->noticia(['titulo' => 'Noticia reciente dos']);
+        $this->noticia(['titulo' => 'Noticia en borrador', 'slug' => 'noticia-en-borrador', 'estado' => 'borrador', 'publicada_en' => null]);
+
+        $this->get('/')->assertOk()
+            ->assertSee('Últimas noticias')
+            ->assertSee('Abrió la preinscripción 2026')
+            ->assertSee('Noticia reciente uno')
+            ->assertDontSee('Noticia en borrador');
+
+        Noticia::query()->update(['estado' => 'borrador', 'publicada_en' => null]);
+        $this->get('/')->assertOk()->assertSee('Todavía no hay noticias publicadas.');
+    }
 }

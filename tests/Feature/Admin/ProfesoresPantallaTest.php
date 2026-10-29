@@ -62,6 +62,40 @@ class ProfesoresPantallaTest extends TestCase
             ->set('buscar', 'ines.zarate')->assertSee('Zárate');
     }
 
+    // ---------- #31: buscar por nombre y por nombre completo ----------
+
+    /**
+     * Juana Pérez (DNI 31222333) y otro profesor que no debe aparecer (DNI 32444555).
+     * Los correos no incluyen el nombre: así la búsqueda no coincide por el email.
+     */
+    private function buscarJuana(string $texto)
+    {
+        GuardarProfesor::ejecutar(['dni' => '31222333', 'apellido' => 'Pérez', 'nombre' => 'Juana', 'email' => 'docente.a@nep30.test', 'sede_id' => null]);
+        GuardarProfesor::ejecutar(['dni' => '32444555', 'apellido' => 'Gómez', 'nombre' => 'Carlos', 'email' => 'docente.b@nep30.test', 'sede_id' => null]);
+
+        return Livewire::actingAs($this->admin())->test(Index::class)->set('buscar', $texto);
+    }
+
+    public function test_busqueda_por_nombre(): void
+    {
+        $this->buscarJuana('Juana')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_por_nombre_y_apellido(): void
+    {
+        $this->buscarJuana('Juana Pérez')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_por_apellido_y_nombre(): void
+    {
+        $this->buscarJuana('Pérez Juana')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
+    public function test_busqueda_sin_distinguir_mayusculas(): void
+    {
+        $this->buscarJuana('juana pérez')->assertSee('31222333')->assertDontSee('32444555');
+    }
+
     public function test_listado_paginado_de_15(): void
     {
         User::factory()->count(16)->conRol('profesor')->create(); // + la profesora de prueba = 17
@@ -170,6 +204,46 @@ class ProfesoresPantallaTest extends TestCase
             ->call('quitar', $curso->id, $corte->id)
             ->assertHasErrors('materia_id')
             ->assertSee('No se puede quitar');
+    }
+
+    public function test_en_el_celular_las_tablas_se_ven_como_tarjetas_con_la_etiqueta_de_cada_dato(): void
+    {
+        // Listado: cada dato lleva el nombre de su columna, así en 360 px se lee como tarjeta y las acciones no quedan fuera de la vista
+        $this->actingAs($this->admin())->get('/admin/profesores')
+            ->assertOk()
+            ->assertSee('class="tabla-apilada"', false)
+            ->assertSee('data-etiqueta="DNI"', false)
+            ->assertSee('data-etiqueta="Acciones"', false);
+
+        // Materias asignadas
+        $this->actingAs($this->admin())->get(route('admin.profesores.asignaciones', $this->profesoraDePrueba()))
+            ->assertOk()
+            ->assertSee('class="tabla-apilada"', false)
+            ->assertSee('data-etiqueta="Curso"', false)
+            ->assertSee('data-etiqueta="Acción"', false);
+    }
+
+    public function test_el_enlace_materias_se_ve_como_boton_igual_que_editar_y_dar_de_baja(): void
+    {
+        // Sugerencia de José: las tres acciones de la fila con el mismo aspecto (borde, relleno y texto primario)
+        $html = $this->actingAs($this->admin())->get('/admin/profesores')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<a href="[^"]*\/asignaciones"[^>]*class="[^"]*rounded border border-primario px-3 py-1\.5[^"]*"[^>]*>Materias<\/a>/',
+            $html
+        );
+    }
+
+    public function test_el_estado_se_ve_en_verde_si_esta_activo_y_en_rojo_si_esta_de_baja(): void
+    {
+        // #61, observación de Aguayo en la revisión del Sprint 1: el texto se mantiene y el color lo acompaña
+        $baja = GuardarProfesor::ejecutar(['dni' => '30111222', 'apellido' => 'Zárate', 'nombre' => 'Inés', 'email' => 'ines.zarate@nep30.test', 'sede_id' => null]);
+        $baja->update(['activo' => false]);
+
+        $html = $this->actingAs($this->admin())->get('/admin/profesores')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/<span class="[^"]*estado-activo bg-exito-claro text-exito[^"]*">Activo<\/span>/', $html);
+        $this->assertMatchesRegularExpression('/<span class="[^"]*estado-baja bg-error-claro text-error[^"]*">De baja<\/span>/', $html);
     }
 
     public function test_asignaciones_de_un_usuario_que_no_es_profesor_da_404(): void

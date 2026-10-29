@@ -16,7 +16,19 @@
     --color-texto-suave: #4A5363;
     --color-borde: #C9CED8;
     --color-exito: #24693F;
+    --color-exito-claro: #E3F3E9;   /* = green-100; fondo de la etiqueta «Activo» (contraste con exito: 5,8:1) */
     --color-error: #B83227;
+    --color-error-claro: #FBE4E1;   /* = red-100; fondo de la etiqueta «De baja» (contraste con error: 4,9:1) */
+
+    /* #59: colores de estado de Figma («Estilos» → Primitivos), con sus mismos nombres.
+       Reemplazan a los de Tailwind con el mismo nombre. Texto 600/700 sobre fondo 100: AA (4,5:1). */
+    --color-green-600: #24693F;     /* éxito, activo, cupos disponibles */
+    --color-green-100: #E3F3E9;
+    --color-amber-700: #8A5300;     /* aviso, lista de espera (5,7:1 sobre amber-100) */
+    --color-amber-100: #FFF1D6;
+    --color-red-600: #B83227;       /* error, de baja */
+    --color-red-100: #FBE4E1;
+    --color-navy-900: #16225E;      /* pie del sitio */
 
     --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
     --font-titulos: 'Fraunces', ui-serif, Georgia, serif;
@@ -53,3 +65,23 @@
     [role='alert'] { @apply text-error; }
     [role='status'] { @apply text-exito font-semibold mb-4; }
 }
+
+/*
+ * Tablas que en el celular (menos de 768 px) se ven como tarjetas, una por fila, para que no se corten
+ * ni ensanchen la página. Uso: <table class="tabla-apilada"> y en cada <td> data-etiqueta="Nombre de la columna".
+ */
+@media (width < 48rem) {
+    .tabla-apilada thead { @apply sr-only; }
+    .tabla-apilada tr { @apply block rounded border border-borde mb-3 px-3 py-2; }
+    .tabla-apilada td { @apply flex gap-3 border-0 px-0 py-1; }
+    .tabla-apilada td[data-etiqueta]::before { content: attr(data-etiqueta); @apply w-28 shrink-0 font-semibold; }
+}
+
+/* HU03 (#49): mapa de sedes (Leaflet) */
+/* #mapa-sedes gana a los estilos de leaflet.css, que se cargan después */
+#mapa-sedes.leaflet-container { font-family: inherit; font-size: 0.875rem; }
+#mapa-sedes .leaflet-popup-content { font-size: 0.9375rem; line-height: 1.45; margin: 0.875rem 1rem; }
+#mapa-sedes .leaflet-popup-content p { margin: 0.125rem 0; }
+#mapa-sedes a { color: var(--color-primario); }
+.marcador-sede { background: none; border: 0; }
+.marcador-sede:focus-visible { outline: 3px solid var(--color-primario); outline-offset: 2px; border-radius: 50%; }

@@ -109,4 +109,27 @@ class SedesTest extends TestCase
         $this->assertSame(0, DB::table('v_oferta_publica')->where('sede_id', $sede->id)->count());
         $this->assertDatabaseHas('sedes', ['id' => $sede->id]); // no se borró
     }
+
+    // ---------- HU03 (#50) ----------
+
+    public function test_cada_sede_tiene_el_enlace_ver_en_el_mapa(): void
+    {
+        $sede = Sede::where('nombre', 'Sede Central (prueba)')->firstOrFail();
+
+        $this->actingAs($this->admin())
+            ->get(route('admin.sedes'))
+            ->assertOk()
+            ->assertSee('Ver en el mapa')
+            ->assertSee("https://www.openstreetmap.org/?mlat={$sede->latitud}&amp;mlon={$sede->longitud}", false);
+    }
+
+    public function test_el_seeder_de_sedes_reales_no_corre_con_los_datos_de_prueba(): void
+    {
+        // Con $seed = true se corre DatabaseSeeder: solo están las 2 sedes de prueba
+        $this->assertSame(2, Sede::count());
+
+        // Vacío, se puede correr sin errores y no agrega nada
+        $this->seed(\Database\Seeders\SedesRealesSeeder::class);
+        $this->assertSame(2, Sede::count());
+    }
 }

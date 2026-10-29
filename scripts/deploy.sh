@@ -17,6 +17,8 @@ npm run build
 
 # Las migraciones (tablas, triggers y vistas) se corren con el usuario de MySQL
 # que puede crear tablas. Laravel en el día a día usa nep30_app, que no puede.
+# Sin caché de configuración: si no, Laravel ignora el usuario de migraciones (#34)
+php artisan config:clear
 set -a; source "$HOME/.nep30_migraciones.env"; set +a
 php artisan migrate --force
 unset DB_USERNAME DB_PASSWORD

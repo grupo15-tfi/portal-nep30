@@ -27,11 +27,14 @@
             ['Cursos', 'admin.cursos'],
             ['Profesores', 'admin.profesores.index'],       // HU08
             ['Preinscripciones', 'admin.preinscripciones'], // HU09
-            ['Noticias y contenidos', 'admin.noticias'],    // HU10
+            ['Noticias', 'admin.noticias'],                 // HU10 (#75)
+            ['Contenidos', 'admin.contenidos'],             // HU10 (#75)
+            ['Calendario', 'admin.calendario'],             // HU10 (#75)
             ['Auditoría', 'admin.auditoria'],               // HU16
         ],
         'profesor' => [
             ['Inicio', 'profesor.inicio'],
+            ['Mis materias', 'profesor.materias'],          // HU08 (#54)
             ['Mis cursos', 'profesor.cursos'],              // HU11
             ['Asistencia', 'profesor.asistencia'],          // HU13
             ['Tareas', 'profesor.tareas'],                  // HU12
@@ -60,6 +63,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $titulo }} · Campus N.E.P. y F.P. N.º 30</title>
+    <x-favicon />
     {{-- Sin npm run build la página funciona igual, sin estilos (y las pruebas pasan) --}}
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @fonts
@@ -74,11 +78,15 @@
     {{-- Barra superior --}}
     <header class="bg-primario text-white">
         <div class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
-            <div class="min-w-0">
-                <p class="font-titulos text-lg font-semibold leading-tight">Campus N.E.P. y F.P. N.º 30</p>
-                <p class="text-sm opacity-90 truncate">
-                    {{ $usuario->nombreCompleto() }} · {{ $nombresRol[$rol] ?? 'Sin rol' }}
-                </p>
+            <div class="flex items-center gap-3 min-w-0">
+                {{-- #56: sello del proyecto (versión blanca, para el fondo azul) --}}
+                <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-10 shrink-0">
+                <div class="min-w-0">
+                    <p class="font-titulos text-lg font-semibold leading-tight">Campus N.E.P. y F.P. N.º 30</p>
+                    <p class="text-sm opacity-90 truncate">
+                        {{ $usuario->nombreCompleto() }} · {{ $nombresRol[$rol] ?? 'Sin rol' }}
+                    </p>
+                </div>
             </div>
 
             <div class="hidden md:flex items-center gap-3">

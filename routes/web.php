@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\Profesor\MisMateriasController;
+use App\Http\Controllers\SedesController;
+use App\Http\Controllers\SedesMapaController;
 use App\Http\Controllers\SitioController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,6 +17,27 @@ Route::get('/contacto', [SitioController::class, 'seccion'])->defaults('clave', 
 Route::get('/privacidad', [SitioController::class, 'seccion'])->defaults('clave', 'privacidad')->name('privacidad');
 Route::get('/noticias', [SitioController::class, 'noticias'])->name('noticias.index');
 Route::get('/noticias/{slug}', [SitioController::class, 'noticia'])->name('noticias.show');
+
+// ---------- HU02 (#44): oferta educativa por sede y calendario académico (públicas) ----------
+Route::get('/oferta', [OfertaController::class, 'index'])->name('oferta');
+Route::get('/oferta/{curso}', [OfertaController::class, 'curso'])->whereNumber('curso')->name('oferta.curso');
+Route::get('/calendario', [OfertaController::class, 'calendario'])->name('calendario');
+
+// ---------- HU04 (#52): formulario de preinscripción (público). Lo guarda Preinscribir de #51. ----------
+Route::get('/preinscripcion/{curso}', [OfertaController::class, 'preinscripcion'])->whereNumber('curso')
+    ->middleware('throttle:30,1')->name('preinscripcion.crear'); // #53: máximo 30 por minuto por IP
+
+// ---------- HU03 (#49): página del mapa de sedes (pública) ----------
+Route::get('/sedes', SedesMapaController::class)->name('sedes.mapa');
+
+// ---------- HU03 (#48): datos de sedes y sede más cercana (públicas, JSON para el mapa) ----------
+// throttle:30,1 = como máximo 30 pedidos por minuto desde la misma IP
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/sedes/datos', [SedesController::class, 'datos'])->name('sedes.datos');
+    Route::get('/sedes/cercanas', [SedesController::class, 'cercanas'])->name('sedes.cercanas');
+    // HU03 (#50): localidades con sedes activas, alternativa cuando no se encuentra el domicilio
+    Route::get('/sedes/localidades', [SedesController::class, 'localidades'])->name('sedes.localidades');
+});
 
 // HU05: inicio de sesión. El nombre "login" es adonde Laravel manda a los invitados.
 Route::view('/login', 'auth.login')->middleware('guest')->name('login');
@@ -44,11 +69,17 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/profesores', 'admin.profesores')->name('profesores.index');
     Route::get('/profesores/{profesor}/asignaciones', fn (User $profesor) => view('admin.profesores-asignaciones', ['profesor' => $profesor]))
         ->name('profesores.asignaciones');
+    // HU10 (#75): noticias, contenidos del sitio y calendario académico
+    Route::view('/noticias', 'admin.noticias')->name('noticias');
+    Route::view('/contenidos', 'admin.contenidos')->name('contenidos');
+    Route::view('/calendario', 'admin.calendario')->name('calendario');
     
 });
 
 Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU08 (#54): las materias que tiene asignadas
+    Route::get('/materias', MisMateriasController::class)->name('materias');
     // Historias del rol Profesor: sus rutas van acá
 });
 

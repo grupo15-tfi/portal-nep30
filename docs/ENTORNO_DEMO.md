@@ -149,6 +149,7 @@ composer install --no-dev --optimize-autoloader --no-interaction
 npm ci && npm run build
 php artisan key:generate
 
+php artisan config:clear
 set -a; source ~/.nep30_migraciones.env; set +a
 php artisan migrate --force
 php artisan db:seed --force        # roles, permisos, catálogo, Administrador y datos de PRUEBA
@@ -205,6 +206,7 @@ fin del sprint: PR develop → main → tests → deploy automático → demo �
 | `Permission denied` en `storage` | Permisos después de un cambio manual | `sudo chgrp -R www-data storage bootstrap/cache && sudo chmod -R ug+rwX storage bootstrap/cache` |
 | El deploy falla y el sitio da 503 (mantenimiento) | El script se cortó después de `php artisan down` | `cd /var/www/portal-nep30 && php artisan up`; la causa está en **Actions** → ejecución en rojo → paso "Deploy por SSH" |
 | `SQLSTATE[42000] ... 1142 command denied` | Una migración corrió con `nep30_app` | Correr `migrate` con `source ~/.nep30_migraciones.env` (deploy.sh ya lo hace) |
+| `1142 DROP/CREATE command denied to user 'nep30_app'` al migrar a mano | La configuración está en caché y Laravel ignora ~/.nep30_migraciones.env | `php artisan config:clear` antes del `source`; al terminar, `php artisan optimize` |
 | Certbot falla | La etiqueta DNS no existe o el puerto 80 está cerrado | Revisar la etiqueta DNS y los puertos de la VM |
 | La página no cambia después del deploy | JS en caché del navegador | Recargar con Ctrl+F5 |
 | `No se puede acceder a este sitio` | VM detenida | Iniciarla desde el portal |
