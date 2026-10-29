@@ -16,6 +16,9 @@ use Livewire\Component;
  */
 class Index extends Component
 {
+    // #73: el formulario se abre en la ventana emergente (como Profesores)
+    public bool $ventanaAbierta = false;
+
     // null = alta; con valor = edición de ese curso
     public ?int $cursoId = null;
 
@@ -94,6 +97,13 @@ class Index extends Component
         $this->limpiar();
     }
 
+    /** «Nuevo curso»: abre la ventana con el formulario vacío */
+    public function nuevo(): void
+    {
+        $this->limpiar();
+        $this->ventanaAbierta = true;
+    }
+
     public function editar(int $id): void
     {
         $curso = Curso::findOrFail($id);
@@ -109,6 +119,7 @@ class Index extends Component
         $this->cupo       = (string) $curso->cupo;
 
         $this->resetValidation();
+        $this->ventanaAbierta = true;
     }
 
     /** Activa o desactiva el curso. Un curso finalizado no se toca. */
@@ -127,9 +138,10 @@ class Index extends Component
         session()->flash('ok', $curso->estado === 'activo' ? 'Curso activado.' : 'Curso desactivado.');
     }
 
+    /** Cierra la ventana y vacía el formulario (Cancelar, Esc o después de guardar) */
     public function limpiar(): void
     {
-        $this->reset(['cursoId', 'planId', 'sedeId', 'periodoId', 'turno', 'dias', 'horaInicio', 'horaFin', 'cupo']);
+        $this->reset(['ventanaAbierta', 'cursoId', 'planId', 'sedeId', 'periodoId', 'turno', 'dias', 'horaInicio', 'horaFin', 'cupo']);
         $this->resetValidation();
     }
 

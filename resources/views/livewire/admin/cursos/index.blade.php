@@ -1,5 +1,8 @@
 <div>
-    <h1>Cursos</h1>
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <h1>Cursos</h1>
+        <button type="button" wire:click="nuevo" class="bg-primario text-white hover:bg-primario/90">+ Nuevo curso</button>
+    </div>
 
     @if (session('ok')) <p role="status">{{ session('ok') }}</p> @endif
     @if (session('error')) <p role="alert">{{ session('error') }}</p> @endif
@@ -50,82 +53,84 @@
         </tbody>
     </table>
 
-    {{-- Formulario de alta y edición --}}
-    <h2>{{ $cursoId ? 'Editar curso' : 'Nuevo curso' }}</h2>
+    {{-- #73: alta y edición en la ventana emergente --}}
+    @if ($ventanaAbierta)
+        <x-ventana id="titulo-curso" :titulo="$cursoId ? 'Editar curso' : 'Nuevo curso'" cerrar="limpiar">
+            <form wire:submit="guardar">
+                <div>
+                    <label for="planId">Plan *</label>
+                    <select id="planId" wire:model="planId">
+                        <option value="">Elegí un plan</option>
+                        @foreach ($planes as $plan)
+                            <option value="{{ $plan->id }}">{{ $plan->nombre }}</option>
+                        @endforeach
+                    </select>
+                    @error('planId') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-    <form wire:submit="guardar">
-        <div>
-            <label for="planId">Plan *</label>
-            <select id="planId" wire:model="planId">
-                <option value="">Elegí un plan</option>
-                @foreach ($planes as $plan)
-                    <option value="{{ $plan->id }}">{{ $plan->nombre }}</option>
-                @endforeach
-            </select>
-            @error('planId') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="sedeId">Sede *</label>
+                    <select id="sedeId" wire:model="sedeId">
+                        <option value="">Elegí una sede</option>
+                        @foreach ($sedes as $sede)
+                            <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
+                        @endforeach
+                    </select>
+                    @error('sedeId') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="sedeId">Sede *</label>
-            <select id="sedeId" wire:model="sedeId">
-                <option value="">Elegí una sede</option>
-                @foreach ($sedes as $sede)
-                    <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
-                @endforeach
-            </select>
-            @error('sedeId') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="periodoId">Período *</label>
+                    <select id="periodoId" wire:model="periodoId">
+                        <option value="">Elegí un período</option>
+                        @foreach ($periodos as $periodo)
+                            <option value="{{ $periodo->id }}">
+                                {{ $periodo->anio }}{{ $periodo->cuatrimestre ? ' · ' . $periodo->cuatrimestre . '.º cuatrimestre' : ' · anual' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('periodoId') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="periodoId">Período *</label>
-            <select id="periodoId" wire:model="periodoId">
-                <option value="">Elegí un período</option>
-                @foreach ($periodos as $periodo)
-                    <option value="{{ $periodo->id }}">
-                        {{ $periodo->anio }}{{ $periodo->cuatrimestre ? ' · ' . $periodo->cuatrimestre . '.º cuatrimestre' : ' · anual' }}
-                    </option>
-                @endforeach
-            </select>
-            @error('periodoId') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="turno">Turno *</label>
+                    <select id="turno" wire:model="turno">
+                        <option value="mañana">Mañana</option>
+                        <option value="tarde">Tarde</option>
+                        <option value="noche">Noche</option>
+                    </select>
+                    @error('turno') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="turno">Turno *</label>
-            <select id="turno" wire:model="turno">
-                <option value="mañana">Mañana</option>
-                <option value="tarde">Tarde</option>
-                <option value="noche">Noche</option>
-            </select>
-            @error('turno') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="dias">Días</label>
+                    <input id="dias" type="text" wire:model="dias" maxlength="60" placeholder="Lunes a viernes">
+                    @error('dias') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="dias">Días</label>
-            <input id="dias" type="text" wire:model="dias" maxlength="60" placeholder="Lunes a viernes">
-            @error('dias') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="horaInicio">Hora de inicio *</label>
+                    <input id="horaInicio" type="time" wire:model="horaInicio">
+                    @error('horaInicio') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="horaInicio">Hora de inicio *</label>
-            <input id="horaInicio" type="time" wire:model="horaInicio">
-            @error('horaInicio') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="horaFin">Hora de fin *</label>
+                    <input id="horaFin" type="time" wire:model="horaFin">
+                    @error('horaFin') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="horaFin">Hora de fin *</label>
-            <input id="horaFin" type="time" wire:model="horaFin">
-            @error('horaFin') <p role="alert">{{ $message }}</p> @enderror
-        </div>
+                <div>
+                    <label for="cupo">Cupo * (1 a 500)</label>
+                    <input id="cupo" type="number" min="1" max="500" wire:model="cupo">
+                    @error('cupo') <p role="alert">{{ $message }}</p> @enderror
+                </div>
 
-        <div>
-            <label for="cupo">Cupo * (1 a 500)</label>
-            <input id="cupo" type="number" min="1" max="500" wire:model="cupo">
-            @error('cupo') <p role="alert">{{ $message }}</p> @enderror
-        </div>
-
-        <button type="submit">{{ $cursoId ? 'Guardar cambios' : 'Crear curso' }}</button>
-        @if ($cursoId)
-            <button type="button" wire:click="limpiar">Cancelar</button>
-        @endif
-    </form>
+                <div class="flex gap-2">
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardar">{{ $cursoId ? 'Guardar cambios' : 'Crear curso' }}</button>
+                    <button type="button" wire:click="limpiar">Cancelar</button>
+                </div>
+            </form>
+        </x-ventana>
+    @endif
 </div>

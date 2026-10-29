@@ -13,6 +13,9 @@ use Livewire\Component;
  */
 class Index extends Component
 {
+    // #73: el formulario se abre en la ventana emergente (como Profesores)
+    public bool $ventanaAbierta = false;
+
     // null = alta; con valor = edición de esa sede
     public ?int $sedeId = null;
 
@@ -62,6 +65,13 @@ class Index extends Component
         $this->limpiar();
     }
 
+    /** «Nueva sede»: abre la ventana con el formulario vacío */
+    public function nueva(): void
+    {
+        $this->limpiar();
+        $this->ventanaAbierta = true;
+    }
+
     public function editar(int $id): void
     {
         $sede = Sede::findOrFail($id);
@@ -78,6 +88,7 @@ class Index extends Component
         $this->observaciones = $sede->observaciones ?? '';
 
         $this->resetValidation();
+        $this->ventanaAbierta = true;
     }
 
     /** Activa o desactiva la sede. Una sede inactiva desaparece del mapa y de la oferta pública. */
@@ -90,9 +101,10 @@ class Index extends Component
         session()->flash('ok', $sede->activo ? 'Sede activada.' : 'Sede desactivada.');
     }
 
+    /** Cierra la ventana y vacía el formulario (Cancelar, Esc o después de guardar) */
     public function limpiar(): void
     {
-        $this->reset(['sedeId', 'nombre', 'tipo', 'direccion', 'localidad', 'telefono', 'email', 'latitud', 'longitud', 'observaciones']);
+        $this->reset(['ventanaAbierta', 'sedeId', 'nombre', 'tipo', 'direccion', 'localidad', 'telefono', 'email', 'latitud', 'longitud', 'observaciones']);
         $this->resetValidation();
     }
 
