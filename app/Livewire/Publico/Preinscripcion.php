@@ -6,6 +6,9 @@ use App\Actions\Preinscripciones\Preinscribir;
 use App\Models\Preinscripcion as Solicitud;
 use App\Support\OfertaTexto;
 use Livewire\Component;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 /**
  * HU04 (#52): formulario de preinscripción y pantalla de confirmación (GET /preinscripcion/{curso}).
@@ -29,6 +32,13 @@ class Preinscripcion extends Component
     public string $ultimo_ciclo_aprobado = '';
     public bool $acepta_privacidad = false;
 
+    /** #53: campo trampa (honeypot). Está oculto: una persona no lo ve ni lo completa; un bot sí. */
+    public string $sitio_web = '';
+
+    /** #53: como máximo 5 envíos cada 10 minutos desde la misma IP */
+    public const MAX_ENVIOS = 5;
+    public const MINUTOS = 10;
+
     /** Resultado del envío: null mientras se completa el formulario */
     public ?array $resultado = null;
 
@@ -48,6 +58,23 @@ class Preinscripcion extends Component
 
     public function enviar(): void
     {
+        // #53: un bot completó el campo trampa → no se guarda nada y no se le da pista
+        if ($this->sitio_web !== '') {
+            Log::info('Preinscripción descartada por el campo trampa');
+
+            return;
+        }
+
+        // #53: límite de envíos por IP. Se cuenta cada intento, salga bien o mal.
+        $clave = 'preinscripcion:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($clave, self::MAX_ENVIOS)) {
+            $minutos = (int) ceil(RateLimiter::availableIn($clave) / 60);
+            throw ValidationException::withMessages([
+                'envio' => "Hiciste demasiados intentos. Probá de nuevo en {$minutos} minuto(s).",
+            ]);
+        }
+        RateLimiter::hit($clave, self::MINUTOS * 60);
+        
         $solicitud = Preinscribir::ejecutar([
             'curso_id'              => (int) $this->datosCurso['curso_id'],
             'dni'                   => trim($this->dni),
