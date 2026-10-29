@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Actions\Contenidos;
-use Illuminate\Support\Facades\Auth;
+
 use App\Models\Evento;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +15,9 @@ use Illuminate\Validation\Rule;
  */
 class GuardarEvento
 {
-    public const TIPOS = ['institucional', 'evaluacion', 'entrega', 'feriado', 'otro']; // chk_evento_tipo
+    // Tipos para eventos institucionales. «evaluacion» y «entrega» también existen en la base
+    // (chk_evento_tipo), pero son de los eventos de un curso, que carga el profesor en otra historia.
+    public const TIPOS = ['institucional', 'feriado', 'otro'];
 
     public static function ejecutar(array $datos, ?Evento $evento = null): Evento
     {
