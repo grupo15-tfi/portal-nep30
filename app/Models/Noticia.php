@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Noticia extends Model
 {
-    protected $fillable = ['titulo', 'slug', 'resumen', 'cuerpo', 'imagen_ruta', 'video_url','estado', 'publicada_en', 'autor_id'];
+    protected $fillable = ['titulo', 'slug', 'resumen', 'cuerpo', 'imagen_ruta', 'video_url', 'estado', 'publicada_en', 'autor_id'];
 
     protected function casts(): array
     {
