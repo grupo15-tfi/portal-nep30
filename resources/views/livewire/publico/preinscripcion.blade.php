@@ -167,6 +167,14 @@
                     @error('curso_id') <p class="mt-3 mb-0 rounded bg-red-100 p-3 font-semibold text-error">⚠ {{ $message }}</p> @enderror
                 </div>
 
+                {{-- #53: campo trampa contra bots. Oculto para las personas y para los lectores de pantalla. --}}
+                <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
+                    <label for="sitio_web">No completar este campo</label>
+                    <input id="sitio_web" type="text" wire:model="sitio_web" tabindex="-1" autocomplete="off">
+                </div>
+
+                @error('envio') <p class="mb-4 rounded bg-red-100 p-3 font-semibold text-error" role="alert">⚠ {{ $message }}</p> @enderror
+                
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end max-w-none mb-0">
                     <a href="{{ route('oferta.curso', $cursoObj->curso_id) }}" class="inline-flex min-h-11 items-center justify-center rounded border-2 border-primario px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Volver</a>
                     <button type="submit" class="min-h-11 px-5 py-2.5 disabled:opacity-60 disabled:cursor-wait" wire:loading.attr="disabled">
