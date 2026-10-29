@@ -17,12 +17,16 @@ use Livewire\Component;
  */
 class Index extends Component
 {
-    /** Tipos que puede cargar el administrador (los de curso no van acá) */
-    public const TIPOS = [
-        'institucional' => 'Institucional',
-        'feriado'       => 'Feriado',
-        'otro'          => 'Otro',
-    ];
+    /**
+     * Tipos que puede cargar el administrador, con su nombre para mostrar.
+     * Salen de GuardarEvento::TIPOS (#74), así el desplegable y la validación usan la misma lista.
+     */
+    public static function tipos(): array
+    {
+        return collect(GuardarEvento::TIPOS)
+            ->mapWithKeys(fn (string $tipo) => [$tipo => (new Evento(['tipo' => $tipo]))->tipoTexto()])
+            ->all();
+    }
 
     /** Mes que se ve, AAAA-MM */
     #[Url]
@@ -129,7 +133,7 @@ class Index extends Component
         $eventos = Evento::query()
             ->whereNull('curso_id')
             ->entre($inicio, $inicio->copy()->endOfMonth())
-            ->when(array_key_exists($this->filtroTipo, self::TIPOS), fn ($q) => $q->where('tipo', $this->filtroTipo))
+            ->when(array_key_exists($this->filtroTipo, self::tipos()), fn ($q) => $q->where('tipo', $this->filtroTipo))
             ->orderBy('fecha_inicio')
             ->orderBy('id')
             ->get();

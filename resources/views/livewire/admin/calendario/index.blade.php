@@ -18,7 +18,7 @@
                     <label for="filtroTipo">Tipo</label>
                     <select id="filtroTipo" wire:model.live="filtroTipo">
                         <option value="">Todos</option>
-                        @foreach (\App\Livewire\Admin\Calendario\Index::TIPOS as $valor => $nombre)
+                        @foreach (\App\Livewire\Admin\Calendario\Index::tipos() as $valor => $nombre)
                             <option value="{{ $valor }}">{{ $nombre }}</option>
                         @endforeach
                     </select>
@@ -74,7 +74,7 @@
                 <div class="max-w-none">
                     <label for="tipo">Tipo *</label>
                     <select id="tipo" wire:model="tipo" @error('tipo') aria-invalid="true" @enderror>
-                        @foreach (\App\Livewire\Admin\Calendario\Index::TIPOS as $valor => $nombre)
+                        @foreach (\App\Livewire\Admin\Calendario\Index::tipos() as $valor => $nombre)
                             <option value="{{ $valor }}">{{ $nombre }}</option>
                         @endforeach
                     </select>

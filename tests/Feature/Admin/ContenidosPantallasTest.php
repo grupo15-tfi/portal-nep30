@@ -279,6 +279,16 @@ class ContenidosPantallasTest extends TestCase
         $this->get(route('calendario', ['mes' => '2026-11']))->assertDontSee('Reunión de profesores');
     }
 
+    public function test_el_desplegable_de_tipos_usa_la_lista_de_guardar_evento(): void
+    {
+        $componente = Livewire::actingAs($this->admin)->test(Calendario::class);
+
+        foreach (\App\Actions\Contenidos\GuardarEvento::TIPOS as $tipo) {
+            $componente->assertSeeHtml('<option value="'.$tipo.'">');
+        }
+        $this->assertSame(\App\Actions\Contenidos\GuardarEvento::TIPOS, array_keys(Calendario::tipos()));
+    }
+
     public function test_fecha_de_fin_anterior_al_inicio_da_error(): void
     {
         Livewire::actingAs($this->admin)->test(Calendario::class)
