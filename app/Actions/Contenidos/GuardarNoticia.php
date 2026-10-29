@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Actions\Contenidos;
-   use Illuminate\Support\Facades\Auth;
+
 use App\Models\Noticia;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -17,21 +18,22 @@ class GuardarNoticia
 {
     public static function ejecutar(array $datos, ?UploadedFile $imagen = null, ?Noticia $noticia = null): Noticia
     {
-        $validos = Validator::make($datos, [
+        // Datos e imagen juntos: si hay errores en los dos, se muestran todos de una vez
+        $validos = Validator::make([...$datos, 'imagen' => $imagen], [
             'titulo'        => ['required', 'string', 'max:200'],
             'resumen'       => ['nullable', 'string', 'max:400'],
             'cuerpo'        => ['required', 'string'],
             'video_url'     => Archivos::reglaVideo(),
             'publicar'      => ['boolean'],
             'quitar_imagen' => ['boolean'],
+            'imagen'        => Archivos::reglaImagen(),
         ], [
             'titulo.required' => 'Escribí el título.',
             'titulo.max'      => 'El título puede tener hasta 200 caracteres.',
             'resumen.max'     => 'El resumen puede tener hasta 400 caracteres.',
             'cuerpo.required' => 'Escribí el texto de la noticia.',
+            ...Archivos::mensajesImagen(),
         ])->validate();
-
-        Archivos::validarImagen($imagen);
 
         $noticia ??= new Noticia(['autor_id' => Auth::id()]);
         $publicar = (bool) ($validos['publicar'] ?? false);
