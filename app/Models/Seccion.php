@@ -12,5 +12,5 @@ class Seccion extends Model
 {
     protected $table = 'secciones'; // Laravel buscaría "seccions"
 
-    protected $fillable = ['clave', 'titulo', 'contenido', 'imagen_ruta', 'actualizado_por'];
+    protected $fillable = ['clave', 'titulo', 'contenido', 'imagen_ruta', 'video_url','actualizado_por'];
 }
