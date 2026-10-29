@@ -34,6 +34,8 @@ Route::get('/sedes', SedesMapaController::class)->name('sedes.mapa');
 Route::middleware('throttle:30,1')->group(function () {
     Route::get('/sedes/datos', [SedesController::class, 'datos'])->name('sedes.datos');
     Route::get('/sedes/cercanas', [SedesController::class, 'cercanas'])->name('sedes.cercanas');
+    // HU03 (#50): localidades con sedes activas, alternativa cuando no se encuentra el domicilio
+    Route::get('/sedes/localidades', [SedesController::class, 'localidades'])->name('sedes.localidades');
 });
 
 // HU05: inicio de sesión. El nombre "login" es adonde Laravel manda a los invitados.

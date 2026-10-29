@@ -213,7 +213,34 @@ class SedesMapaTest extends TestCase
         $this->getJson(route('sedes.cercanas', ['domicilio' => 'Calle que no existe 99999']))->assertStatus(422);
         Http::assertSentCount(2); // venció la caché de «no encontrado»: se vuelve a preguntar
     }
+    
+    // ---------- sedes.localidades (#50) ----------
 
+    public function test_las_localidades_salen_sin_repetir_con_el_promedio_de_sus_sedes(): void
+    {
+        // Las dos sedes de prueba son de Formosa: una sola fila, en el punto medio entre las dos
+        $this->getJson(route('sedes.localidades'))
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertExactJson([['localidad' => 'Formosa', 'lat' => -26.16875, 'lng' => -58.18405]]);
+    }
+
+    public function test_las_localidades_vienen_en_orden_y_sin_sedes_inactivas(): void
+    {
+        Sede::create(['nombre' => 'Anexo Clorinda (prueba)', 'tipo' => 'anexo', 'localidad' => 'Clorinda',
+            'latitud' => -25.2848, 'longitud' => -57.7185]);
+        Sede::create(['nombre' => 'Anexo Pirané (prueba)', 'tipo' => 'anexo', 'localidad' => 'Pirané',
+            'latitud' => -25.7324, 'longitud' => -59.1088, 'activo' => false]);
+
+        $this->getJson(route('sedes.localidades'))
+            ->assertOk()
+            ->assertJsonCount(2)
+            ->assertJsonPath('0.localidad', 'Clorinda')
+            ->assertJsonPath('0.lat', -25.2848)
+            ->assertJsonPath('1.localidad', 'Formosa')
+            ->assertJsonMissing(['localidad' => 'Pirané']);
+    }
+    
     // ---------- Límite de pedidos ----------
 
     public function test_las_rutas_tienen_limite_de_pedidos(): void

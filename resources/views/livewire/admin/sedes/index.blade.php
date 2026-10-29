@@ -24,6 +24,11 @@
                     <td>{{ $sede->localidad }}</td>
                     <td>{{ $sede->activo ? 'Activa' : 'Inactiva' }}</td>
                     <td>
+                        {{-- HU03 (#50): para comprobar que las coordenadas cargadas caen sobre el edificio --}}
+                        <a href="https://www.openstreetmap.org/?mlat={{ $sede->latitud }}&amp;mlon={{ $sede->longitud }}#map=18/{{ $sede->latitud }}/{{ $sede->longitud }}"
+                           target="_blank" rel="noopener noreferrer">
+                            Ver en el mapa<span class="sr-only"> (se abre en otra pestaña)</span>
+                        </a>
                         <button type="button" wire:click="editar({{ $sede->id }})">Editar</button>
                         <button type="button" wire:click="cambiarEstado({{ $sede->id }})"
                                 wire:confirm="¿Seguro que querés {{ $sede->activo ? 'desactivar' : 'activar' }} esta sede?">
