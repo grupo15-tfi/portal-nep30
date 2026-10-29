@@ -25,16 +25,26 @@ class Archivos
         }];
     }
 
-    /** Valida la imagen: jpg, png o webp, hasta 2 MB. Error con la clave «imagen». */
-    public static function validarImagen(?UploadedFile $imagen): void
+    /** Regla de la imagen: vacía, o jpg, png o webp de hasta 2 MB */
+    public static function reglaImagen(): array
     {
-        Validator::make(['imagen' => $imagen], [
-            'imagen' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:'.self::MAX_KB],
-        ], [
+        return ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:'.self::MAX_KB];
+    }
+
+    /** Mensajes de error de la imagen, con la clave «imagen» */
+    public static function mensajesImagen(): array
+    {
+        return [
             'imagen.mimes' => 'La imagen tiene que ser JPG, PNG o WEBP.',
             'imagen.max'   => 'La imagen no puede pesar más de 2 MB.',
             'imagen.file'  => 'No se pudo subir la imagen. Probá de nuevo.',
-        ])->validate();
+        ];
+    }
+
+    /** Valida solo la imagen. Se mantiene por compatibilidad: las acciones la validan junto con los datos. */
+    public static function validarImagen(?UploadedFile $imagen): void
+    {
+        Validator::make(['imagen' => $imagen], ['imagen' => self::reglaImagen()], self::mensajesImagen())->validate();
     }
 
     /**

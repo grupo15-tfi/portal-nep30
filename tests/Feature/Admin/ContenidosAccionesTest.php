@@ -159,6 +159,17 @@ class ContenidosAccionesTest extends TestCase
         Storage::disk('public')->assertMissing($ruta);
     }
 
+    public function test_si_fallan_los_datos_y_la_imagen_se_ven_los_dos_errores_juntos(): void
+    {
+        $errores = $this->errores(fn () => GuardarNoticia::ejecutar(
+            $this->noticia(['titulo' => '']),
+            UploadedFile::fake()->create('nota.pdf', 100, 'application/pdf'),
+        ));
+
+        $this->assertArrayHasKey('titulo', $errores);
+        $this->assertArrayHasKey('imagen', $errores);
+    }
+
     // ---------- Secciones ----------
 
     public function test_editar_una_seccion_cambia_el_sitio_y_registra_quien(): void
@@ -209,6 +220,15 @@ class ContenidosAccionesTest extends TestCase
 
         $this->assertArrayHasKey('tipo', $errores);
         $this->assertArrayHasKey('fecha_fin', $errores);
+    }
+
+    public function test_un_evento_institucional_no_puede_ser_de_tipo_evaluacion_o_entrega(): void
+    {
+        foreach (['evaluacion', 'entrega'] as $tipo) {
+            $errores = $this->errores(fn () => GuardarEvento::ejecutar(['titulo' => 'x', 'tipo' => $tipo, 'fecha_inicio' => '2026-12-04']));
+
+            $this->assertArrayHasKey('tipo', $errores, $tipo);
+        }
     }
 
     public function test_editar_y_eliminar_un_evento(): void

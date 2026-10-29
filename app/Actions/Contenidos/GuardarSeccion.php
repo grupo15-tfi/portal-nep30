@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Actions\Contenidos;
-use Illuminate\Support\Facades\Auth;
+
 use App\Models\Seccion;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -16,18 +17,19 @@ class GuardarSeccion
 {
     public static function ejecutar(Seccion $seccion, array $datos, ?UploadedFile $imagen = null): Seccion
     {
-        $validos = Validator::make($datos, [
+        // Datos e imagen juntos: si hay errores en los dos, se muestran todos de una vez
+        $validos = Validator::make([...$datos, 'imagen' => $imagen], [
             'titulo'        => ['required', 'string', 'max:150'],
             'contenido'     => ['required', 'string'],
             'video_url'     => Archivos::reglaVideo(),
             'quitar_imagen' => ['boolean'],
+            'imagen'        => Archivos::reglaImagen(),
         ], [
             'titulo.required'    => 'Escribí el título.',
             'titulo.max'         => 'El título puede tener hasta 150 caracteres.',
             'contenido.required' => 'Escribí el contenido.',
+            ...Archivos::mensajesImagen(),
         ])->validate();
-
-        Archivos::validarImagen($imagen);
 
         $seccion->update([
             'titulo'          => $validos['titulo'],
