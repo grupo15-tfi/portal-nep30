@@ -27,7 +27,9 @@
             ['Cursos', 'admin.cursos'],
             ['Profesores', 'admin.profesores.index'],       // HU08
             ['Preinscripciones', 'admin.preinscripciones'], // HU09
-            ['Noticias y contenidos', 'admin.noticias'],    // HU10
+            ['Noticias', 'admin.noticias'],                 // HU10 (#75)
+            ['Contenidos', 'admin.contenidos'],             // HU10 (#75)
+            ['Calendario', 'admin.calendario'],             // HU10 (#75)
             ['Auditoría', 'admin.auditoria'],               // HU16
         ],
         'profesor' => [

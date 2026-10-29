@@ -16,6 +16,9 @@
                  class="mb-6 w-full h-auto rounded">
         @endif
 
+        {{-- HU10 (#75): video de YouTube de la noticia --}}
+        <x-video-youtube :url="$noticia->video_url" :titulo="$noticia->titulo" />
+
         <div>{!! nl2br(e($noticia->cuerpo)) !!}</div>
     </article>
 @endsection

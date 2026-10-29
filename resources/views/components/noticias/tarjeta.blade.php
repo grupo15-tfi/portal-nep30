@@ -1,18 +1,26 @@
 {{--
     Tarjeta de noticia con foto para el Inicio (#60).
     Sin foto se muestra un fondo liso: no se inventan imágenes (solo fotos reales con autorización, Ley 25.326).
-    El video de YouTube se suma cuando exista HU10 (#47).
+    HU10 (#75): si tiene video de YouTube, la tarjeta lo avisa; el video se reproduce en el detalle.
     Uso: <x-noticias.tarjeta :noticia="$noticia" />
 --}}
 @props(['noticia'])
 
 <article class="flex flex-col overflow-hidden rounded-lg border border-borde bg-white">
-    @if ($noticia->imagen_ruta)
-        <img src="{{ asset('storage/'.$noticia->imagen_ruta) }}" alt="" loading="lazy" decoding="async"
-             width="640" height="360" class="aspect-video w-full object-cover">
-    @else
-        <div class="aspect-video w-full bg-primario-claro" aria-hidden="true"></div>
-    @endif
+    <div class="relative">
+        @if ($noticia->imagen_ruta)
+            <img src="{{ asset('storage/'.$noticia->imagen_ruta) }}" alt="" loading="lazy" decoding="async"
+                 width="640" height="360" class="aspect-video w-full object-cover">
+        @else
+            <div class="aspect-video w-full bg-primario-claro" aria-hidden="true"></div>
+        @endif
+        @if ($noticia->video_url)
+            <span class="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-primario px-2.5 py-0.5 text-sm font-semibold text-white">
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Con video
+            </span>
+        @endif
+    </div>
     <div class="flex flex-1 flex-col gap-1.5 p-4">
         <p class="m-0 text-sm text-texto-suave">
             <time datetime="{{ $noticia->publicada_en->toDateString() }}">{{ $noticia->publicada_en->format('d/m/Y') }}</time>
