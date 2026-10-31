@@ -37,8 +37,73 @@ class SedesRealesSeeder extends Seeder
      *     'observaciones' => 'Funciona en …',                   // opcional
      * ],
      */
-    public const SEDES = [
-        // Vacío hasta tener el listado confirmado por la institución.
+           public const SEDES = [
+        [
+            'nombre'        => 'Sede central – Barrio Luján',
+            'tipo'          => 'central',
+            'direccion'     => 'Barrio Luján',
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.133144,
+            'longitud'      => -58.186828,
+            'observaciones' => 'Funciona en el edificio de la E.P.E.P. N.º 520, junto con otras escuelas.',
+        ],
+        [
+            'nombre'        => 'Anexo B.º El Porvenir',
+            'tipo'          => 'anexo',
+            'direccion'     => 'Centro de Ladrilleros, Mz. D4, C. 05',
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.138606,
+            'longitud'      => -58.172528,
+            'observaciones' => 'Funciona en el Instituto IAPA El Porvenir.',
+        ],
+        [
+            'nombre'        => 'Anexo Escuela Especial N.º 12',
+            'tipo'          => 'anexo',
+            'direccion'     => null,
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.142238,
+            'longitud'      => -58.188902,
+            'observaciones' => 'Funciona en la Escuela Especial N.º 12.',
+        ],
+        [
+            'nombre'        => 'Anexo Juan Domingo Perón',
+            'tipo'          => 'anexo',
+            'direccion'     => null,
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.134832,
+            'longitud'      => -58.177795,
+            'observaciones' => 'Funciona en el Centro de Educación de Jóvenes y Adultos.',
+        ],
+        [
+            'nombre'        => 'Anexo San Isidro',
+            'tipo'          => 'anexo',
+            'direccion'     => 'Mz. 9, C. 21',
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.146116,
+            'longitud'      => -58.197396,
+            'observaciones' => null,
+        ],
+        [
+            'nombre'        => 'Anexo Barrio El Municipal',
+            'tipo'          => 'anexo',
+            'direccion'     => null,
+            'localidad'     => 'Formosa',
+            'telefono'      => null,
+            'email'         => null,
+            'latitud'       => -26.130027,
+            'longitud'      => -58.174043,
+            'observaciones' => 'Funciona en el OIAG – Informática N.º 30.',
+        ],
     ];
 
     public function run(): void
