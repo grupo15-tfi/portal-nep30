@@ -8,6 +8,7 @@ use App\Actions\Contenidos\GuardarNoticia;
 use App\Models\Noticia;
 use App\Support\YouTube;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -29,6 +30,9 @@ class Index extends Component
 
     public ?string $aviso = null;
 
+    /** Error de una acción de la lista (por ejemplo, publicar sin consentimiento, #96) */
+    public ?string $errorLista = null;
+
     // ---------- Ventana ----------
     public bool $ventanaAbierta = false;
 
@@ -42,6 +46,9 @@ class Index extends Component
     public $imagen = null;          // archivo nuevo (WithFileUploads)
     public bool $quitar_imagen = false;
     public ?string $imagenActual = null;
+
+    /** #96: las personas de la imagen o el video, o que se nombran, dieron su consentimiento */
+    public bool $consentimiento = false;
 
     public function updatedBuscar(): void
     {
@@ -77,13 +84,14 @@ class Index extends Component
         $this->cuerpo       = $noticia->cuerpo;
         $this->video_url    = $noticia->video_url ?? '';
         $this->imagenActual = $noticia->imagen_ruta;
+        $this->consentimiento = (bool) $noticia->consentimiento_en;
         $this->ventanaAbierta = true;
     }
 
     /** Cierra la ventana y vacía el formulario (Cancelar, Esc o después de guardar) */
     public function cerrar(): void
     {
-        $this->reset(['ventanaAbierta', 'noticiaId', 'titulo', 'resumen', 'cuerpo', 'video_url', 'imagen', 'quitar_imagen', 'imagenActual']);
+        $this->reset(['ventanaAbierta', 'noticiaId', 'titulo', 'resumen', 'cuerpo', 'video_url', 'imagen', 'quitar_imagen', 'imagenActual', 'consentimiento']);
         $this->resetErrorBag();
     }
 
@@ -99,6 +107,7 @@ class Index extends Component
             'video_url'     => trim($this->video_url) !== '' ? trim($this->video_url) : null,
             'publicar'      => $publicar,
             'quitar_imagen' => $this->quitar_imagen,
+            'consentimiento' => $this->consentimiento,
         ], $this->imagen ?: null, $existente);
 
         $this->aviso = $noticia->estado === 'publicada'
@@ -112,7 +121,16 @@ class Index extends Component
     public function cambiarEstado(int $id): void
     {
         $noticia = Noticia::findOrFail($id);
-        $noticia = CambiarEstadoNoticia::ejecutar($noticia, $noticia->estado !== 'publicada');
+        $this->reset('aviso', 'errorLista');
+
+        try {
+            $noticia = CambiarEstadoNoticia::ejecutar($noticia, $noticia->estado !== 'publicada');
+        } catch (ValidationException $e) {
+            // #96: con imagen o video y sin consentimiento no se publica; se avisa arriba de la lista
+            $this->errorLista = "«{$noticia->titulo}»: ".collect($e->errors())->flatten()->first();
+
+            return;
+        }
 
         $this->aviso = $noticia->estado === 'publicada'
             ? "Noticia publicada: «{$noticia->titulo}» ya se ve en Inicio y en Noticias."
