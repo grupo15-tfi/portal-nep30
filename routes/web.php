@@ -71,6 +71,8 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
         ->name('profesores.asignaciones');
     // HU09 (#87): revisión de preinscripciones y lista de espera
     Route::view('/preinscripciones', 'admin.preinscripciones')->name('preinscripciones');
+    // HU09 (#88): alumnos inscriptos y baja con motivo
+    Route::view('/alumnos', 'admin.alumnos')->name('alumnos');
     // HU10 (#75): noticias, contenidos del sitio y calendario académico
     Route::view('/noticias', 'admin.noticias')->name('noticias');
     Route::view('/contenidos', 'admin.contenidos')->name('contenidos');
