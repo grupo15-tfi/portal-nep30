@@ -7,6 +7,10 @@ use App\Models\Preinscripcion;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Actions\Alumnos\DarDeAlta;
+use App\Actions\Preinscripciones\AprobarPreinscripcion;
+use App\Actions\Preinscripciones\RechazarPreinscripcion;
+use App\Actions\Preinscripciones\RegistrarAviso;
 
 /**
  * HU09 (#87): el administrador revisa las preinscripciones (HU04) y la lista de espera.
@@ -76,13 +80,45 @@ class Index extends Component
         $this->resetErrorBag();
     }
 
-    // FASE 2: acá van aprobar(), rechazar(), darDeAlta() y registrarAviso().
+    public function aprobar(int $id): void
+    {
+        $p = Preinscripcion::findOrFail($id);
+        AprobarPreinscripcion::ejecutar($p);
+
+        $this->cerrar();
+        $this->aviso = "Preinscripción de {$p->apellido}, {$p->nombre} aprobada. Se le envió un correo.";
+    }
+
+    public function rechazar(): void
+    {
+        $p = Preinscripcion::findOrFail($this->rechazarId);
+        RechazarPreinscripcion::ejecutar($p, trim($this->motivo));
+
+        $this->cerrar();
+        $this->aviso = "Preinscripción de {$p->apellido}, {$p->nombre} rechazada. Se le envió el motivo por correo.";
+    }
+
+    public function darDeAlta(int $id): void
+    {
+        $p = Preinscripcion::findOrFail($id);
+        DarDeAlta::ejecutar($p);
+
+        $this->aviso = "{$p->apellido}, {$p->nombre} quedó inscripto en el curso. Le llegó el correo para crear su contraseña.";
+    }
+
+    public function registrarAviso(int $id): void
+    {
+        $p = Preinscripcion::findOrFail($id);
+        RegistrarAviso::ejecutar($p);
+
+        $this->aviso = "Aviso a {$p->apellido}, {$p->nombre} registrado.";
+    }
 
     public function render()
     {
         $texto = trim($this->buscar);
 
-        $preinscripciones = Preinscripcion::with(['curso.sede', 'curso.planEstudio'])
+        $preinscripciones = Preinscripcion::with(['curso.sede', 'curso.planEstudio', 'inscripcion'])
             ->when($this->estado !== '', fn ($q) => $q->where('estado', $this->estado))
             ->when($this->cursoId, fn ($q) => $q->where('curso_id', $this->cursoId))
             ->when($texto !== '', fn ($q) => $q->where(function ($w) use ($texto) {

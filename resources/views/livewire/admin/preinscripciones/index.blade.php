@@ -27,7 +27,7 @@
         </div>
         <div>
             <label for="buscar">Buscar por DNI o apellido</label>
-            <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: 30000005 o Pérez">
+            <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: 12345678 o Pérez">
         </div>
     </div>
 
@@ -69,7 +69,7 @@
                                             wire:confirm="¿Aprobar la preinscripción de {{ $p->apellido }}, {{ $p->nombre }}? Se le envía un correo.">Aprobar</button>
                                     <button type="button" wire:click="abrirRechazo({{ $p->id }})">Rechazar</button>
                                 @endif
-                                @if ($p->estado === 'aprobada' && ! $p->inscripcion_existe)
+                                @if ($p->estado === 'aprobada' && ! $p->inscripcion)
                                     <button type="button" wire:click="darDeAlta({{ $p->id }})"
                                             wire:confirm="¿Dar de alta a {{ $p->apellido }}, {{ $p->nombre }}? Se crea su usuario y ocupa un lugar del cupo.">Dar de alta</button>
                                 @endif

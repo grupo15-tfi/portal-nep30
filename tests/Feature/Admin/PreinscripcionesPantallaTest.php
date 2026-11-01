@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Illuminate\Support\Facades\Notification;
 use App\Livewire\Admin\Preinscripciones\Index;
 use App\Models\Curso;
 use App\Models\PlanEstudio;
@@ -34,13 +35,15 @@ class PreinscripcionesPantallaTest extends TestCase
 
     public function test_solo_el_administrador_entra_y_el_menu_muestra_preinscripciones(): void
     {
+        // Sin sesión, al login (va primero: después de actingAs la prueba queda con sesión)
+        $this->get('/admin/preinscripciones')->assertRedirect();
+
         $this->actingAs($this->admin())->get('/admin/preinscripciones')->assertOk()->assertSee('Preinscripciones');
         $this->actingAs($this->admin())->get('/admin/inicio')->assertSee(route('admin.preinscripciones'), false);
 
         foreach (['profesor', 'alumno', 'auditor'] as $rol) {
             $this->actingAs(User::factory()->conRol($rol)->create())->get('/admin/preinscripciones')->assertForbidden();
         }
-        $this->get('/admin/preinscripciones')->assertRedirect();
     }
 
     public function test_arranca_con_las_pendientes_y_filtra_por_estado(): void
@@ -81,5 +84,62 @@ class PreinscripcionesPantallaTest extends TestCase
             ->assertSeeInOrder(['Aspirante Uno', 'Aspirante Dos'])
             ->assertSee('3704 111111')
             ->assertSee('Lugares disponibles');
+    }
+
+    public function test_rechazar_exige_motivo_y_lo_guarda(): void
+    {
+        Notification::fake();
+        $p = Preinscripcion::where('dni', '30000005')->firstOrFail();
+
+        Livewire::actingAs($this->admin())->test(Index::class)
+            ->call('abrirRechazo', $p->id)
+            ->set('motivo', '')
+            ->call('rechazar')
+            ->assertHasErrors('motivo')
+            ->set('motivo', 'El curso no corresponde a su nivel educativo.')
+            ->call('rechazar')
+            ->assertHasNoErrors()
+            ->assertSee('rechazada');
+
+        $this->assertSame('rechazada', $p->fresh()->estado);
+    }
+
+    public function test_aprobar_y_dar_de_alta_desde_la_pantalla(): void
+    {
+        Notification::fake();
+        $p = Preinscripcion::where('dni', '30000005')->firstOrFail();
+
+        Livewire::actingAs($this->admin())->test(Index::class)
+            ->call('aprobar', $p->id)->assertHasNoErrors()
+            ->set('estado', 'aprobada')
+            ->call('darDeAlta', $p->id)->assertHasNoErrors()
+            ->assertSee('quedó inscripto');
+
+        $this->assertDatabaseHas('inscripciones', ['preinscripcion_id' => $p->id, 'estado' => 'activa']);
+    }
+
+    public function test_con_el_curso_completo_no_se_aprueba_y_se_ve_el_error(): void
+    {
+        Notification::fake();
+        $p = Preinscripcion::where('dni', '30000003')->firstOrFail();   // Peluquería, completo
+
+        // Regla de la #86: aprobar exige un lugar disponible; la persona sigue en la lista de espera
+        Livewire::actingAs($this->admin())->test(Index::class)
+            ->call('aprobar', $p->id)
+            ->assertHasErrors('cupo');
+
+        $this->assertSame('en_espera', $p->fresh()->estado);
+    }
+
+    public function test_registrar_aviso_en_la_lista_de_espera(): void
+    {
+        $p = Preinscripcion::where('dni', '30000003')->firstOrFail();
+
+        Livewire::actingAs($this->admin())->test(Index::class)
+            ->set('cursoId', $p->curso_id)
+            ->call('registrarAviso', $p->id)
+            ->assertSee('Aviso a');
+
+        $this->assertNotNull($p->fresh()->avisado_en);
     }
 }
