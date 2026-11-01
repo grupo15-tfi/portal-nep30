@@ -74,6 +74,7 @@ class ContenidosPantallasTest extends TestCase
             ->set('resumen', 'Los alumnos muestran sus trabajos.')
             ->set('cuerpo', 'Invitamos a toda la comunidad.')
             ->set('video_url', self::VIDEO)
+            ->set('consentimiento', true)
             ->call('guardar', true)
             ->assertHasNoErrors()
             ->assertSet('ventanaAbierta', false)
@@ -134,6 +135,7 @@ class ContenidosPantallasTest extends TestCase
             ->set('cuerpo', 'Texto.')
             ->set('imagen', UploadedFile::fake()->image('foto.jpg', 800, 450))
             ->assertSeeHtml('alt="Vista previa de la imagen"')
+            ->set('consentimiento', true)
             ->call('guardar', true)
             ->assertHasNoErrors();
 
@@ -141,6 +143,42 @@ class ContenidosPantallasTest extends TestCase
         $this->assertNotNull($noticia->imagen_ruta);
         Storage::disk('public')->assertExists($noticia->imagen_ruta);
         $this->get(route('noticias.show', $noticia->slug))->assertSee('storage/'.$noticia->imagen_ruta, false);
+    }
+
+    public function test_consentimiento_la_casilla_es_obligatoria_para_publicar_con_imagen_o_video(): void
+    {
+        Livewire::actingAs($this->admin)->test(Noticias::class)
+            ->call('nueva')
+            ->assertSee('dieron su consentimiento')
+            ->set('titulo', 'Acto con fotos de alumnos')
+            ->set('cuerpo', 'Texto.')
+            ->set('imagen', UploadedFile::fake()->image('acto.jpg', 800, 450))
+            ->call('guardar', true)
+            ->assertHasErrors(['consentimiento'])
+            ->assertSet('ventanaAbierta', true)
+            ->call('guardar', false)                       // como borrador, sí
+            ->assertHasNoErrors()
+            ->assertSee('Borrador guardado');
+
+        $borrador = Noticia::where('titulo', 'Acto con fotos de alumnos')->firstOrFail();
+
+        // Desde la lista tampoco se publica: avisa arriba y sigue en borrador
+        Livewire::actingAs($this->admin)->test(Noticias::class)
+            ->call('cambiarEstado', $borrador->id)
+            ->assertSeeHtml('role="alert"')
+            ->assertSee('confirmá el consentimiento');
+        $this->assertSame('borrador', $borrador->fresh()->estado);
+
+        // Editando y marcando la casilla, se publica; al volver a editarla aparece marcada
+        Livewire::actingAs($this->admin)->test(Noticias::class)
+            ->call('editar', $borrador->id)
+            ->assertSet('consentimiento', false)
+            ->set('consentimiento', true)
+            ->call('guardar', true)
+            ->assertHasNoErrors()
+            ->call('editar', $borrador->id)
+            ->assertSet('consentimiento', true);
+        $this->assertSame('publicada', $borrador->fresh()->estado);
     }
 
     public function test_imagen_de_tipo_no_permitido_da_error(): void
