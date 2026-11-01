@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Noticia extends Model
 {
-    protected $fillable = ['titulo', 'slug', 'resumen', 'cuerpo', 'imagen_ruta', 'video_url', 'estado', 'publicada_en', 'autor_id'];
+    protected $fillable = ['titulo', 'slug', 'resumen', 'cuerpo', 'imagen_ruta', 'video_url', 'consentimiento_en', 'estado', 'publicada_en', 'autor_id'];
 
     protected function casts(): array
     {
-        return ['publicada_en' => 'datetime'];
+        return ['publicada_en' => 'datetime', 'consentimiento_en' => 'datetime'];
     }
 
     /** Publicadas, con fecha de publicación cumplida, de la más reciente a la más antigua */
@@ -31,5 +31,11 @@ class Noticia extends Model
     public function autor()
     {
         return $this->belongsTo(User::class, 'autor_id');
+    }
+
+    /** #96: ¿tiene imagen o video? Entonces, para publicarla, hace falta el consentimiento */
+    public function tieneImagenOVideo(): bool
+    {
+        return (bool) $this->imagen_ruta || (bool) $this->video_url;
     }
 }
