@@ -15,16 +15,20 @@ use Illuminate\Support\Facades\DB;
  */
 class CatalogoSeeder extends Seeder
 {
-    public const FORMACION_PROFESIONAL = [
+        public const FORMACION_PROFESIONAL = [
         'Microemprendimientos y proyectos productivos',
         'Peluquería',
         'Organización de Eventos Sociales',
         'Operador de Informática para la Administración y Gestión',
         'Confeccionista a medida, modista/o',
-        'Belleza Integral',
         'Servicios Integrales',
-        'Tejido Artesanal',
         'Montador Electricista Domiciliario',
+    ];
+
+    /** #95: confirmado por el PO en la revisión del Sprint 2 (30/10) */
+    public const CAPACITACION_LABORAL = [
+        'Tejido Artesanal',
+        'Belleza Integral',
     ];
 
     public const TERMINALIDAD = [
@@ -35,7 +39,8 @@ class CatalogoSeeder extends Seeder
 
     public function run(): void
     {
-        foreach ([...array_fill_keys(self::FORMACION_PROFESIONAL, 'formacion_profesional'),
+                foreach ([...array_fill_keys(self::FORMACION_PROFESIONAL, 'formacion_profesional'),
+                  ...array_fill_keys(self::CAPACITACION_LABORAL, 'capacitacion_laboral'),
                   ...array_fill_keys(self::TERMINALIDAD, 'terminalidad')] as $nombre => $tipo) {
             DB::table('planes_estudio')->updateOrInsert(
                 ['nombre' => $nombre],

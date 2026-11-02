@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class PlanEstudio extends Model
 {
     protected $table = 'planes_estudio';
+    
+    /** Tipos de plan (chk_plan_tipo). «Capacitación laboral»: #95, pedido del PO del 30/10. */
+    public const TIPOS = [
+        'formacion_profesional' => 'Formación profesional',
+        'capacitacion_laboral'  => 'Capacitación laboral',
+        'terminalidad'          => 'Terminalidad',
+    ];
+    
     protected $fillable = 
     [
         'nombre', 
