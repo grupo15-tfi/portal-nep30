@@ -40,7 +40,7 @@ class OfertaController extends Controller
             ->when($sedeId, fn ($q) => $q->where('o.sede_id', $sedeId))
             ->orderByRaw("FIELD(s.tipo, 'central', 'sede', 'anexo')")
             ->orderBy('o.sede')
-            ->orderByRaw("FIELD(o.tipo, 'formacion_profesional', 'terminalidad')")
+            ->orderByRaw("FIELD(o.tipo, 'formacion_profesional', 'capacitacion_laboral', 'terminalidad')")
             ->orderBy('o.plan')
             ->orderByRaw("FIELD(o.turno, 'mañana', 'tarde', 'noche')")
             ->get();
