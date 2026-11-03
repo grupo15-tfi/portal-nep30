@@ -4,6 +4,7 @@ namespace App\Livewire\Profesor;
 
 use App\Actions\Asistencia\GuardarClase;
 use App\Actions\Asistencia\TomarAsistencia;
+use App\Models\Asistencia as AsistenciaModelo;
 use App\Models\Clase;
 use App\Models\CursoProfesor;
 use App\Models\Inscripcion;
@@ -18,12 +19,8 @@ use Livewire\Component;
  */
 class Asistencia extends Component
 {
-    public const ESTADOS = [
-        'presente'    => 'Presente',
-        'ausente'     => 'Ausente',
-        'tarde'       => 'Tarde',
-        'justificado' => 'Justificado',
-    ];
+    /** Los estados salen del modelo (#92): una sola lista para validar y para mostrar */
+    public const ESTADOS = AsistenciaModelo::ESTADOS;
 
     public CursoProfesor $cursoProfesor;
 
