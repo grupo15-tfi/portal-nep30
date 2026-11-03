@@ -7,6 +7,9 @@
     @if ($aviso)
         <p role="status" class="rounded border-l-4 border-exito bg-exito-claro px-4 py-3">{{ $aviso }}</p>
     @endif
+    @if ($errorLista)
+        <p role="alert" class="rounded border-l-4 border-error bg-error-claro px-4 py-3">⚠ {{ $errorLista }}</p>
+    @endif
 
     <div class="mb-4 flex flex-wrap items-end gap-4">
         <div class="mb-0 w-full max-w-md">
@@ -140,6 +143,17 @@
                                 class="mt-2 aspect-video w-full rounded border border-borde"
                                 allow="encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
                     @endif
+                </div>
+
+                {{-- #96: consentimiento de las personas (acta del Sprint 2, punto 4.2; Ley 25.326) --}}
+                <div class="max-w-none rounded border border-borde bg-primario-claro/40 p-3">
+                    <label class="flex items-start gap-2 font-normal">
+                        <input type="checkbox" wire:model="consentimiento" class="mt-1" aria-describedby="ayuda-consentimiento"
+                               @error('consentimiento') aria-invalid="true" @enderror>
+                        <span>Las personas que aparecen en la imagen o el video, o que se nombran, dieron su consentimiento.</span>
+                    </label>
+                    <p id="ayuda-consentimiento" class="text-sm text-texto-suave mb-0">Obligatorio para publicar con imagen o video. Si no hay consentimiento, usá fotos sin personas identificables. Un borrador se puede guardar sin marcarlo.</p>
+                    @error('consentimiento') <p role="alert">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="flex flex-wrap gap-2 max-w-none">
