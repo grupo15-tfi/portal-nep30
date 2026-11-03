@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * HU09 (#86): cada materia o módulo que cursa un inscripto.
@@ -29,5 +30,11 @@ class InscripcionMateria extends Model
     public function materia(): BelongsTo
     {
         return $this->belongsTo(Materia::class);
+    }
+
+    /** HU11 (#89): notas de esta materia, de la más vieja a la más nueva */
+    public function evaluaciones(): HasMany
+    {
+        return $this->hasMany(Evaluacion::class)->orderBy('fecha')->orderBy('id');
     }
 }
