@@ -23,7 +23,7 @@
             @forelse ($planes as $plan)
                 <tr wire:key="plan-{{ $plan->id }}">
                     <td>{{ $plan->nombre }}</td>
-                    <td>{{ $plan->tipo === 'terminalidad' ? 'Terminalidad' : 'Formación profesional' }}</td>
+                    <td>{{ \App\Models\PlanEstudio::TIPOS[$plan->tipo] ?? $plan->tipo }}</td>
                     <td>{{ $plan->materias_count }}</td>
                     <td>{{ $plan->edad_minima }}</td>
                     <td>{{ $plan->nota_aprobacion }} / {{ $plan->asistencia_minima }} %</td>
@@ -56,8 +56,9 @@
                 <div>
                     <label for="tipo">Tipo *</label>
                     <select id="tipo" wire:model="tipo">
-                        <option value="formacion_profesional">Formación profesional</option>
-                        <option value="terminalidad">Terminalidad</option>
+                        @foreach (\App\Models\PlanEstudio::TIPOS as $valor => $texto)
+                            <option value="{{ $valor }}">{{ $texto }}</option>
+                        @endforeach
                     </select>
                     @error('tipo') <p role="alert">{{ $message }}</p> @enderror
                 </div>
