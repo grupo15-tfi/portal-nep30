@@ -16,12 +16,8 @@ use Livewire\Component;
  */
 class Notas extends Component
 {
-    public const TIPOS = [
-        'parcial'          => 'Parcial',
-        'recuperatorio'    => 'Recuperatorio',
-        'trabajo_practico' => 'Trabajo práctico',
-        'final'            => 'Final',
-    ];
+    /** Los tipos salen del modelo (#89): una sola lista para validar y para mostrar */
+    public const TIPOS = Evaluacion::TIPOS;
 
     public const ESTADOS = [
         'cursando'   => 'Cursando',
