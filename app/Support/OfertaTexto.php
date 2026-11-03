@@ -12,7 +12,7 @@ class OfertaTexto
 {
     public static function tipo(object $curso): string
     {
-               return match ($curso->tipo) {
+        return match ($curso->tipo) {
             'terminalidad'         => 'Terminalidad primaria',
             'capacitacion_laboral' => 'Capacitación laboral',
             default                => 'Formación profesional',

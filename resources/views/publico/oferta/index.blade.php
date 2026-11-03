@@ -5,7 +5,7 @@
 @section('contenido')
     <h1 class="font-titulos text-3xl md:text-4xl font-semibold text-primario mb-2">Oferta educativa</h1>
     <p class="max-w-3xl text-lg mb-6">
-        Formación profesional, capacitación laboral y terminalidad primaria para jóvenes y adultos.
+        Formación profesional, capacitación laboral y terminalidad primaria para jóvenes y adultos. Elegí la sede que te quede más cerca y el turno que te sirva.
     </p>
 
     {{-- Filtro por sede: formulario GET, funciona sin JavaScript --}}

@@ -69,4 +69,12 @@ class CapacitacionLaboralTest extends TestCase
             ->assertSee('Tejido Artesanal')
             ->assertSee('Capacitación laboral');
     }
+
+    public function test_los_cursos_destacados_del_inicio_no_incluyen_terminalidad(): void
+    {
+        $cursos = $this->get(route('inicio'))->assertOk()->viewData('cursos');
+
+        $this->assertNotEmpty($cursos);
+        $this->assertNotContains('terminalidad', $cursos->pluck('tipo')->all());
+    }
 }

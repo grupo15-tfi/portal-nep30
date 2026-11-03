@@ -56,7 +56,7 @@
                 <div>
                     <label for="tipo">Tipo *</label>
                     <select id="tipo" wire:model="tipo">
-                         @foreach (\App\Models\PlanEstudio::TIPOS as $valor => $texto)
+                        @foreach (\App\Models\PlanEstudio::TIPOS as $valor => $texto)
                             <option value="{{ $valor }}">{{ $texto }}</option>
                         @endforeach
                     </select>

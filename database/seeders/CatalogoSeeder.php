@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CatalogoSeeder extends Seeder
 {
-        public const FORMACION_PROFESIONAL = [
+    public const FORMACION_PROFESIONAL = [
         'Microemprendimientos y proyectos productivos',
         'Peluquería',
         'Organización de Eventos Sociales',
@@ -39,9 +39,9 @@ class CatalogoSeeder extends Seeder
 
     public function run(): void
     {
-                foreach ([...array_fill_keys(self::FORMACION_PROFESIONAL, 'formacion_profesional'),
-                  ...array_fill_keys(self::CAPACITACION_LABORAL, 'capacitacion_laboral'),
-                  ...array_fill_keys(self::TERMINALIDAD, 'terminalidad')] as $nombre => $tipo) {
+        foreach ([...array_fill_keys(self::FORMACION_PROFESIONAL, 'formacion_profesional'),
+          ...array_fill_keys(self::CAPACITACION_LABORAL, 'capacitacion_laboral'),
+          ...array_fill_keys(self::TERMINALIDAD, 'terminalidad')] as $nombre => $tipo) {
             DB::table('planes_estudio')->updateOrInsert(
                 ['nombre' => $nombre],
                 ['tipo' => $tipo, 'created_at' => now(), 'updated_at' => now()],
