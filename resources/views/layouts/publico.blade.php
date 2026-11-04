@@ -58,11 +58,11 @@
                 @endforeach
                 @auth
                     @if ($panel)
-                        <a href="{{ $panel }}" class="rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Mi panel</a>
+                        <a href="{{ $panel }}" class="boton rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Mi panel</a>
                     @endif
                 @endauth
                 @guest
-                    <a href="{{ route('login') }}" class="rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
+                    <a href="{{ route('login') }}" class="boton rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ingresar</a>
                 @endguest
             </nav>
 
