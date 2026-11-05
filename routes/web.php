@@ -5,6 +5,7 @@ use App\Http\Controllers\Profesor\MisMateriasController;
 use App\Http\Controllers\SedesController;
 use App\Http\Controllers\SedesMapaController;
 use App\Http\Controllers\SitioController;
+use App\Models\CursoProfesor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,11 +85,16 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
     // HU08 (#54): las materias que tiene asignadas
     Route::get('/materias', MisMateriasController::class)->name('materias');
+    // HU11 (#91): cargar y corregir notas de una de sus materias (el componente da 403 si no es suya)
+    Route::get('/materias/{cursoProfesor}/notas', fn (CursoProfesor $cursoProfesor) => view('profesor.notas', ['cursoProfesor' => $cursoProfesor]))
+        ->name('notas');
     // Historias del rol Profesor: sus rutas van acá
 });
 
 Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU11 (#91): sus notas, solo las propias
+    Route::view('/notas', 'alumno.notas')->name('notas');
     // Historias del rol Alumno: sus rutas van acá
 });
 
