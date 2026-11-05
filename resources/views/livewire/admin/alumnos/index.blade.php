@@ -113,7 +113,10 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2 max-w-none">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="darDeBaja" class="border-error bg-error text-white hover:bg-error/90">Dar de baja</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="darDeBaja" class="border-error bg-error text-white hover:bg-error/90">
+                        <span wire:loading.remove wire:target="darDeBaja">Dar de baja</span>
+                        <span wire:loading wire:target="darDeBaja">Dando de baja…</span>
+                    </button>
                     <button type="button" wire:click="cerrar">Cancelar</button>
                 </div>
             </form>

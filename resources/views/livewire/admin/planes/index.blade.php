@@ -106,7 +106,10 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarPlan">{{ $planId ? 'Guardar cambios' : 'Crear plan' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarPlan">
+                        <span wire:loading.remove wire:target="guardarPlan">{{ $planId ? 'Guardar cambios' : 'Crear plan' }}</span>
+                        <span wire:loading wire:target="guardarPlan">Guardando…</span>
+                    </button>
                     <button type="button" wire:click="limpiarPlan">Cancelar</button>
                 </div>
             </form>
@@ -167,7 +170,10 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarMateria">{{ $materiaId ? 'Guardar cambios' : 'Agregar materia' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarMateria">
+                        <span wire:loading.remove wire:target="guardarMateria">{{ $materiaId ? 'Guardar cambios' : 'Agregar materia' }}</span>
+                        <span wire:loading wire:target="guardarMateria">Guardando…</span>
+                    </button>
                     @if ($materiaId)
                         <button type="button" wire:click="limpiarMateria">Cancelar edición</button>
                     @endif

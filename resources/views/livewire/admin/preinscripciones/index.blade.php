@@ -162,7 +162,10 @@
                 @error('estado') <p class="text-error">{{ $message }}</p> @enderror
                 <div class="mt-4 flex justify-end gap-2">
                     <button type="button" wire:click="cerrar">Cancelar</button>
-                    <button type="submit" class="bg-error text-white">Rechazar</button>
+                    <button type="submit" class="bg-error text-white" wire:loading.attr="disabled" wire:target="rechazar">
+                        <span wire:loading.remove wire:target="rechazar">Rechazar</span>
+                        <span wire:loading wire:target="rechazar">Rechazando…</span>
+                    </button>
                 </div>
             </form>
         </x-ventana>
