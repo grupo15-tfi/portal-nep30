@@ -94,15 +94,42 @@
 
     {{-- #59: pie en azul oscuro (navy-900), como en el v4,1 --}}
     <footer class="bg-navy-900 text-white">
-        <div class="mx-auto max-w-6xl px-4 py-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div class="flex items-center gap-3">
-                <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-12 shrink-0">
-                <p>Núcleo de Educación Permanente y Formación Profesional N.º 30 · Formosa</p>
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-6 [&_a:focus-visible]:outline-white">
+            <div class="flex flex-col gap-8 md:flex-row md:justify-between">
+                <div class="flex items-start gap-4">
+                    <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-12 shrink-0">
+                    <div class="space-y-1 text-sm">
+                        <p class="text-base font-bold">Núcleo de Educación Permanente y<br class="hidden md:inline"> Formación Profesional N.º 30</p>
+                        <p>«Hna. María Delgado Valero»</p>
+                        <p>Funciona en la E.P.E.P. N.º 57 «Gendarme Argentino»</p>
+                        <p>Av. de los Constituyentes S/N, B.º Luján, Formosa</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-16 text-sm">
+                    <nav aria-label="El sitio" class="hidden md:block">
+                        <p class="mb-3 text-base font-bold">El sitio</p>
+                        <ul class="space-y-2">
+                            <li><a href="{{ route('inicio') }}" class="hover:underline">Inicio</a></li>
+                            <li><a href="{{ route('historia') }}" class="hover:underline">Historia</a></li>
+                            <li><a href="{{ route('oferta') }}" class="hover:underline">Oferta educativa</a></li>
+                            <li><a href="{{ route('sedes.mapa') }}" class="hover:underline">Sedes</a></li>
+                            <li><a href="{{ route('noticias.index') }}" class="hover:underline">Noticias</a></li>
+                        </ul>
+                    </nav>
+                    <nav aria-label="Contacto">
+                        <p class="mb-3 text-base font-bold">Contacto</p>
+                        <ul class="space-y-2">
+                            <li><a href="{{ route('contacto') }}" class="hover:underline">Teléfono y correo</a></li>
+                            <li><a href="{{ route('privacidad') }}" class="hover:underline">Política de privacidad</a></li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-            <nav aria-label="Enlaces del pie" class="flex gap-4">
-                <a href="{{ route('contacto') }}" class="underline">Contacto</a>
-                <a href="{{ route('privacidad') }}" class="underline">Política de privacidad</a>
-            </nav>
+
+            <div class="mt-8 border-t border-white/20 pt-5 text-sm">
+                <p>© {{ date('Y') }} N.E.P. y F.P. N.º 30 · Formosa</p>
+            </div>
         </div>
     </footer>
 </body>
