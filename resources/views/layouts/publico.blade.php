@@ -93,8 +93,8 @@
     </main>
 
     {{-- #59: pie en azul oscuro (navy-900), como en el v4,1 --}}
-        <footer class="bg-navy-900 text-white">
-        <div class="mx-auto max-w-6xl px-4 pt-10 pb-6">
+    <footer class="bg-navy-900 text-white">
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-6 [&_a:focus-visible]:outline-white">
             <div class="flex flex-col gap-8 md:flex-row md:justify-between">
                 <div class="flex items-start gap-4">
                     <img src="{{ asset('img/sello-blanco.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="48" height="48" class="size-12 shrink-0">
