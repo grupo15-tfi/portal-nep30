@@ -57,6 +57,9 @@
             </select>
         </div>
 
-        <button type="submit">Asignar</button>
+        <button type="submit" wire:loading.attr="disabled" wire:target="asignar">
+                        <span wire:loading.remove wire:target="asignar">Asignar</span>
+                        <span wire:loading wire:target="asignar">Asignando…</span>
+                    </button>
     </form>
 </div>

@@ -158,7 +158,8 @@
 
                 <div class="flex flex-wrap gap-2 max-w-none">
                     <button type="submit" wire:loading.attr="disabled" wire:target="guardar, imagen">
-                        {{ $publicada ? 'Guardar cambios' : 'Publicar' }}
+                        <span wire:loading.remove wire:target="guardar">{{ $publicada ? 'Guardar cambios' : 'Publicar' }}</span>
+                        <span wire:loading wire:target="guardar">Guardando…</span>
                     </button>
                     <button type="button" wire:click="guardar(false)" wire:loading.attr="disabled" wire:target="guardar, imagen">
                         {{ $publicada ? 'Pasar a borrador' : 'Guardar borrador' }}
