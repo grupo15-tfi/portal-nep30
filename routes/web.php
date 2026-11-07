@@ -88,6 +88,9 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
     // HU11 (#91): cargar y corregir notas de una de sus materias (el componente da 403 si no es suya)
     Route::get('/materias/{cursoProfesor}/notas', fn (CursoProfesor $cursoProfesor) => view('profesor.notas', ['cursoProfesor' => $cursoProfesor]))
         ->name('notas');
+    // HU13 (#94): tomar y corregir asistencia de una de sus materias
+    Route::get('/materias/{cursoProfesor}/asistencia', fn (CursoProfesor $cursoProfesor) => view('profesor.asistencia', ['cursoProfesor' => $cursoProfesor]))
+        ->name('asistencia');
     // Historias del rol Profesor: sus rutas van acá
 });
 
@@ -95,6 +98,8 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
     // HU11 (#91): sus notas, solo las propias
     Route::view('/notas', 'alumno.notas')->name('notas');
+    // HU13 (#94): su asistencia por materia
+    Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
     // Historias del rol Alumno: sus rutas van acá
 });
 
