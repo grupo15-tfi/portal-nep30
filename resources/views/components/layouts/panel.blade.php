@@ -42,6 +42,7 @@
         'alumno' => [
             ['Inicio', 'alumno.inicio'],
             ['Mis notas', 'alumno.notas'],                  // HU11 (#91)
+            ['Mi asistencia', 'alumno.asistencia'],         // HU13 (#94)
             ['Tareas', 'alumno.tareas'],                    // HU12
             ['Historial académico', 'alumno.historial'],    // HU17
         ],
