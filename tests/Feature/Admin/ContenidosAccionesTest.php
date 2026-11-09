@@ -40,7 +40,7 @@ class ContenidosAccionesTest extends TestCase
     private function noticia(array $cambios = []): array
     {
         return ['titulo' => 'Abrió la inscripción a Peluquería', 'resumen' => 'Resumen de prueba.',
-            'cuerpo' => 'Texto de prueba de la noticia.', 'publicar' => true, ...$cambios];
+            'cuerpo' => 'Texto de prueba de la noticia.', 'publicar' => true, 'consentimiento' => true, ...$cambios];
     }
 
     /** Ejecuta algo que tiene que fallar y devuelve los errores por campo */
@@ -168,6 +168,64 @@ class ContenidosAccionesTest extends TestCase
 
         $this->assertArrayHasKey('titulo', $errores);
         $this->assertArrayHasKey('imagen', $errores);
+    }
+
+    // ---------- Consentimiento (#96) ----------
+
+    public function test_publicar_con_imagen_o_video_exige_el_consentimiento(): void
+    {
+        $conImagen = $this->errores(fn () => GuardarNoticia::ejecutar($this->noticia(['consentimiento' => false]), UploadedFile::fake()->image('foto.jpg')));
+        $this->assertArrayHasKey('consentimiento', $conImagen);
+
+        $conVideo = $this->errores(fn () => GuardarNoticia::ejecutar($this->noticia(['consentimiento' => false, 'video_url' => self::VIDEO])));
+        $this->assertArrayHasKey('consentimiento', $conVideo);
+
+        $this->assertDatabaseMissing('noticias', ['titulo' => 'Abrió la inscripción a Peluquería']);
+        $this->assertSame([], Storage::disk('public')->allFiles('noticias')); // no quedó la imagen guardada
+    }
+
+    public function test_sin_imagen_ni_video_o_como_borrador_no_hace_falta(): void
+    {
+        $soloTexto = GuardarNoticia::ejecutar($this->noticia(['consentimiento' => false]));
+        $this->assertSame('publicada', $soloTexto->estado);
+        $this->assertNull($soloTexto->consentimiento_en);
+
+        $borrador = GuardarNoticia::ejecutar($this->noticia(['titulo' => 'Borrador con foto', 'publicar' => false, 'consentimiento' => false]), UploadedFile::fake()->image('foto.jpg'));
+        $this->assertSame('borrador', $borrador->estado);
+        $this->assertNull($borrador->consentimiento_en);
+    }
+
+    public function test_guarda_cuando_se_confirmo_y_lo_conserva_al_editar(): void
+    {
+        $noticia = GuardarNoticia::ejecutar($this->noticia(), UploadedFile::fake()->image('foto.jpg'));
+        $this->assertNotNull($noticia->consentimiento_en);
+        $fecha = $noticia->consentimiento_en;
+
+        $this->travel(2)->days();
+        $noticia = GuardarNoticia::ejecutar($this->noticia(['titulo' => 'Título corregido']), null, $noticia);
+        $this->assertEquals($fecha, $noticia->consentimiento_en);
+
+        // La imagen que ya tenía cuenta: si se desmarca, no se puede seguir publicada
+        $errores = $this->errores(fn () => GuardarNoticia::ejecutar($this->noticia(['consentimiento' => false]), null, $noticia));
+        $this->assertArrayHasKey('consentimiento', $errores);
+
+        // Quitando la imagen, sí
+        $noticia = GuardarNoticia::ejecutar($this->noticia(['consentimiento' => false, 'quitar_imagen' => true]), null, $noticia);
+        $this->assertNull($noticia->consentimiento_en);
+    }
+
+    public function test_desde_la_lista_no_se_publica_un_borrador_con_imagen_sin_consentimiento(): void
+    {
+        $borrador = GuardarNoticia::ejecutar($this->noticia(['publicar' => false, 'consentimiento' => false]), UploadedFile::fake()->image('foto.jpg'));
+
+        $errores = $this->errores(fn () => CambiarEstadoNoticia::ejecutar($borrador, true));
+        $this->assertArrayHasKey('consentimiento', $errores);
+        $this->assertSame('borrador', $borrador->fresh()->estado);
+
+        // Despublicar no lo pide
+        $publicada = GuardarNoticia::ejecutar($this->noticia(['titulo' => 'Otra']), UploadedFile::fake()->image('otra.jpg'));
+        CambiarEstadoNoticia::ejecutar($publicada, false);
+        $this->assertSame('borrador', $publicada->fresh()->estado);
     }
 
     // ---------- Secciones ----------

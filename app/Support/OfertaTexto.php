@@ -12,7 +12,11 @@ class OfertaTexto
 {
     public static function tipo(object $curso): string
     {
-        return $curso->tipo === 'terminalidad' ? 'Terminalidad primaria' : 'Formación profesional';
+        return match ($curso->tipo) {
+            'terminalidad'         => 'Terminalidad primaria',
+            'capacitacion_laboral' => 'Capacitación laboral',
+            default                => 'Formación profesional',
+        };
     }
 
     /** «Turno tarde · Lunes a viernes · 14:00 a 18:00» (omite lo que no esté cargado) */

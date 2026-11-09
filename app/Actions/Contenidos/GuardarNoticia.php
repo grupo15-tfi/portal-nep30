@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * HU10 (#74): alta y edición de noticias.
  * Contrato (#47): ejecutar(array $datos, ?UploadedFile $imagen = null, ?Noticia $noticia = null): Noticia
- *   $datos: titulo, resumen?, cuerpo, video_url?, publicar (bool), quitar_imagen?
+ *   $datos: titulo, resumen?, cuerpo, video_url?, publicar (bool), quitar_imagen?, consentimiento? (bool, #96)
  *   Errores: ValidationException con esas claves y «imagen».
  */
 class GuardarNoticia
@@ -19,7 +19,7 @@ class GuardarNoticia
     public static function ejecutar(array $datos, ?UploadedFile $imagen = null, ?Noticia $noticia = null): Noticia
     {
         // Datos e imagen juntos: si hay errores en los dos, se muestran todos de una vez
-        $validos = Validator::make([...$datos, 'imagen' => $imagen], [
+        $validador = Validator::make([...$datos, 'imagen' => $imagen], [
             'titulo'        => ['required', 'string', 'max:200'],
             'resumen'       => ['nullable', 'string', 'max:400'],
             'cuerpo'        => ['required', 'string'],
@@ -27,13 +27,27 @@ class GuardarNoticia
             'publicar'      => ['boolean'],
             'quitar_imagen' => ['boolean'],
             'imagen'        => Archivos::reglaImagen(),
+            'consentimiento' => ['boolean'],
         ], [
             'titulo.required' => 'Escribí el título.',
             'titulo.max'      => 'El título puede tener hasta 200 caracteres.',
             'resumen.max'     => 'El resumen puede tener hasta 400 caracteres.',
             'cuerpo.required' => 'Escribí el texto de la noticia.',
             ...Archivos::mensajesImagen(),
-        ])->validate();
+        ]);
+
+        // #96: para publicar con imagen o video, las personas que aparecen o se nombran tienen que haber
+        // dado su consentimiento (Ley 25.326). Un borrador se puede guardar sin marcarlo.
+        $validador->after(function ($v) use ($datos, $imagen, $noticia) {
+            $quedaImagen = $imagen || ($noticia?->imagen_ruta && empty($datos['quitar_imagen']));
+            $tieneVideo = filled($datos['video_url'] ?? null);
+
+            if (! empty($datos['publicar']) && ($quedaImagen || $tieneVideo) && empty($datos['consentimiento'])) {
+                $v->errors()->add('consentimiento', 'Para publicar con imagen o video, confirmá que las personas que aparecen o se nombran dieron su consentimiento.');
+            }
+        });
+
+        $validos = $validador->validate();
 
         $noticia ??= new Noticia(['autor_id' => Auth::id()]);
         $publicar = (bool) ($validos['publicar'] ?? false);
@@ -46,6 +60,9 @@ class GuardarNoticia
             'estado'      => $publicar ? 'publicada' : 'borrador',
             'imagen_ruta' => Archivos::imagen($imagen, $noticia->imagen_ruta, (bool) ($validos['quitar_imagen'] ?? false), 'noticias'),
         ]);
+
+        // #96: se guarda cuándo se confirmó el consentimiento (la primera vez); si se desmarca, se borra
+        $noticia->consentimiento_en = ! empty($validos['consentimiento']) ? ($noticia->consentimiento_en ?? now()) : null;
 
         // El slug se arma una sola vez: si se cambia el título, el enlace de la noticia no cambia
         $noticia->slug ??= self::slugUnico($validos['titulo']);

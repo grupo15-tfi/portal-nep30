@@ -20,8 +20,8 @@ class SitioController extends Controller
         return view('publico.inicio', [
             'seccion'      => Seccion::where('clave', 'inicio')->firstOrFail(),
             'noticias'     => Noticia::publicadas()->limit(3)->get(),
-            // Hasta 4 cursos de formación profesional, uno por plan (el primero de cada plan)
-            'cursos'       => $oferta->where('tipo', 'formacion_profesional')->unique('plan')->take(4)->values(),
+            // Hasta 4 cursos de formación profesional o capacitación laboral, uno por plan (la terminalidad va en la franja de abajo)
+            'cursos'       => $oferta->whereIn('tipo', ['formacion_profesional', 'capacitacion_laboral'])->unique('plan')->take(4)->values(),
             // Planes de terminalidad primaria, para la franja de abajo
             'terminalidad' => $oferta->where('tipo', 'terminalidad')->pluck('plan')->unique()->values(),
             'anio'         => $oferta->first()?->anio ?? now()->year,

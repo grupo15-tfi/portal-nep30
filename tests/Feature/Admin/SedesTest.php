@@ -123,13 +123,11 @@ class SedesTest extends TestCase
             ->assertSee("https://www.openstreetmap.org/?mlat={$sede->latitud}&amp;mlon={$sede->longitud}", false);
     }
 
-    public function test_el_seeder_de_sedes_reales_no_corre_con_los_datos_de_prueba(): void
+       public function test_el_seeder_de_sedes_reales_no_corre_con_los_datos_de_prueba(): void
     {
-        // Con $seed = true se corre DatabaseSeeder: solo están las 2 sedes de prueba
+        // Con $seed = true se corre DatabaseSeeder: solo están las 2 sedes de prueba.
+        // Las 6 reales se cargan a mano (#97); lo prueba SedesRealesSeederTest.
         $this->assertSame(2, Sede::count());
-
-        // Vacío, se puede correr sin errores y no agrega nada
-        $this->seed(\Database\Seeders\SedesRealesSeeder::class);
-        $this->assertSame(2, Sede::count());
+        $this->assertDatabaseMissing('sedes', ['nombre' => 'Sede central – Barrio Luján']);
     }
 }

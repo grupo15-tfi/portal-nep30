@@ -41,8 +41,8 @@
                 · También te lo mandamos a {{ $resultado['email_oculto'] }}
             </p>
             <p class="flex flex-col gap-3 sm:flex-row mb-0">
-                <a href="{{ route('oferta') }}" class="inline-flex min-h-11 items-center justify-center rounded bg-primario px-5 py-2.5 font-semibold text-white hover:bg-primario/90">Ver otros cursos</a>
-                <a href="{{ route('inicio') }}" class="inline-flex min-h-11 items-center justify-center rounded border-2 border-primario px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Volver al inicio</a>
+                <a href="{{ route('oferta') }}" class="boton inline-flex min-h-11 items-center justify-center rounded bg-primario px-5 py-2.5 font-semibold text-white hover:bg-primario/90">Ver otros cursos</a>
+                <a href="{{ route('inicio') }}" class="boton inline-flex min-h-11 items-center justify-center rounded border-2 border-primario px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Volver al inicio</a>
             </p>
         </section>
     @else
@@ -176,7 +176,7 @@
                 @error('envio') <p class="mb-4 rounded bg-red-100 p-3 font-semibold text-error" role="alert">⚠ {{ $message }}</p> @enderror
                 
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end max-w-none mb-0">
-                    <a href="{{ route('oferta.curso', $cursoObj->curso_id) }}" class="inline-flex min-h-11 items-center justify-center rounded border-2 border-primario px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Volver</a>
+                    <a href="{{ route('oferta.curso', $cursoObj->curso_id) }}" class="boton inline-flex min-h-11 items-center justify-center rounded border-2 border-primario px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Volver</a>
                     <button type="submit" class="min-h-11 px-5 py-2.5 disabled:opacity-60 disabled:cursor-wait" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="enviar">{{ $sinCupo ? 'Anotarme en la lista de espera' : 'Enviar preinscripción' }}</span>
                         <span wire:loading wire:target="enviar">Enviando…</span>

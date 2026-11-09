@@ -23,7 +23,7 @@
             @forelse ($planes as $plan)
                 <tr wire:key="plan-{{ $plan->id }}">
                     <td>{{ $plan->nombre }}</td>
-                    <td>{{ $plan->tipo === 'terminalidad' ? 'Terminalidad' : 'Formación profesional' }}</td>
+                    <td>{{ \App\Models\PlanEstudio::TIPOS[$plan->tipo] ?? $plan->tipo }}</td>
                     <td>{{ $plan->materias_count }}</td>
                     <td>{{ $plan->edad_minima }}</td>
                     <td>{{ $plan->nota_aprobacion }} / {{ $plan->asistencia_minima }} %</td>
@@ -56,8 +56,9 @@
                 <div>
                     <label for="tipo">Tipo *</label>
                     <select id="tipo" wire:model="tipo">
-                        <option value="formacion_profesional">Formación profesional</option>
-                        <option value="terminalidad">Terminalidad</option>
+                        @foreach (\App\Models\PlanEstudio::TIPOS as $valor => $texto)
+                            <option value="{{ $valor }}">{{ $texto }}</option>
+                        @endforeach
                     </select>
                     @error('tipo') <p role="alert">{{ $message }}</p> @enderror
                 </div>
@@ -105,7 +106,10 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarPlan">{{ $planId ? 'Guardar cambios' : 'Crear plan' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarPlan">
+                        <span wire:loading.remove wire:target="guardarPlan">{{ $planId ? 'Guardar cambios' : 'Crear plan' }}</span>
+                        <span wire:loading wire:target="guardarPlan">Guardando…</span>
+                    </button>
                     <button type="button" wire:click="limpiarPlan">Cancelar</button>
                 </div>
             </form>
@@ -166,7 +170,10 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarMateria">{{ $materiaId ? 'Guardar cambios' : 'Agregar materia' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarMateria">
+                        <span wire:loading.remove wire:target="guardarMateria">{{ $materiaId ? 'Guardar cambios' : 'Agregar materia' }}</span>
+                        <span wire:loading wire:target="guardarMateria">Guardando…</span>
+                    </button>
                     @if ($materiaId)
                         <button type="button" wire:click="limpiarMateria">Cancelar edición</button>
                     @endif

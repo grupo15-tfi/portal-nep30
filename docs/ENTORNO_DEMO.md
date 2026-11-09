@@ -223,3 +223,11 @@ fin del sprint: PR develop → main → tests → deploy automático → demo �
 - No editar archivos en el servidor (el deploy los pisa), salvo el `.env`.
 - Solo datos de prueba: los datos reales de alumnos van al hosting de la institución.
 - Después de la defensa: backup final y **eliminar el grupo de recursos `rg-tfi-nep30`** si ya no se usa (borra todo y deja de cobrar).
+
+## Sedes reales (#97)
+
+Las sedes y anexos reales de la institución (relevadas el 31/10/2026, datos públicos) no se cargan con `--seed`. En la VPS se cargan a mano, una sola vez, después del deploy:
+
+    php artisan db:seed --class=SedesRealesSeeder --force
+
+Si se vuelve a correr, actualiza por nombre y no duplica. Las sedes «(prueba)» siguen activas porque los cursos de demostración están en ellas.
