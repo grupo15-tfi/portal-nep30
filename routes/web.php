@@ -91,6 +91,8 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
     // HU13 (#94): tomar y corregir asistencia de una de sus materias
     Route::get('/materias/{cursoProfesor}/asistencia', fn (CursoProfesor $cursoProfesor) => view('profesor.asistencia', ['cursoProfesor' => $cursoProfesor]))
         ->name('asistencia');
+    // HU12 (#120): publicar tareas y revisar entregas
+    Route::view('/tareas', 'profesor.tareas')->name('tareas');
     // Historias del rol Profesor: sus rutas van acá
 });
 
@@ -100,6 +102,8 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     Route::view('/notas', 'alumno.notas')->name('notas');
     // HU13 (#94): su asistencia por materia
     Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
+    // HU12 (#120): sus tareas y entregas
+    Route::view('/tareas', 'alumno.tareas')->name('tareas');
     // Historias del rol Alumno: sus rutas van acá
 });
 
