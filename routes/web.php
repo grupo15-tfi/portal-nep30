@@ -100,6 +100,8 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     Route::view('/notas', 'alumno.notas')->name('notas');
     // HU13 (#94): su asistencia por materia
     Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
+    // HU17 (#127): su historial académico (el PDF lo agrega #126)
+    Route::view('/historial', 'alumno.historial')->name('historial');
     // Historias del rol Alumno: sus rutas van acá
 });
 
