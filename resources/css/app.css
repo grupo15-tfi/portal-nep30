@@ -57,6 +57,48 @@
     button { @apply cursor-pointer rounded border border-primario px-3 py-1.5 font-semibold text-primario hover:bg-primario-claro; }
     button[type='submit'] { @apply bg-primario text-white hover:bg-primario/90; }
 
+    /*
+     * #112: respuesta al apretar. Una sola regla para todo lo que se aprieta: botones, el botón «Menú»
+     * (<summary>) y los enlaces con forma de botón (.boton, solo agrega el efecto: no cambia colores ni tamaños).
+     */
+    button, summary, .boton {
+        transition: background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out, scale 150ms ease-out;
+    }
+    button:not(:disabled):active, summary:active, .boton:active { scale: 0.97; }
+    .boton:focus-visible { @apply outline-2 outline-offset-2 outline-primario; }
+    /* Tarjetas que son enlaces (la oferta del Inicio): se hunden apenas */
+    .tarjeta-enlace { transition: background-color 150ms ease-out, scale 150ms ease-out; }
+    .tarjeta-enlace:active { scale: 0.99; }
+
+    /* Enlaces de texto («« Volver», «Ver detalle»…): sin movimiento, se oscurecen y el subrayado se engrosa */
+    a:not(.boton):not(.tarjeta-enlace):active { text-decoration-thickness: 2px; filter: brightness(0.8); }
+
+    /* Deshabilitado: se nota que no se puede usar y no reacciona */
+    button:disabled { @apply cursor-not-allowed opacity-60; }
+
+    /*
+     * Mientras Livewire procesa, marca con data-loading el botón que se apretó (o el formulario que se envió):
+     * cursor de espera, no se puede volver a apretar (no hay doble envío) y aparece un circulito girando.
+     */
+    button[data-loading], form[data-loading] button[type='submit'] { cursor: wait; pointer-events: none; }
+    button[data-loading]::before, form[data-loading] button[type='submit']::before {
+        content: ''; display: inline-block; width: 0.9em; height: 0.9em; margin-right: 0.45em; vertical-align: -0.1em;
+        border: 2px solid currentColor; border-right-color: transparent; border-radius: 9999px;
+        animation: girar 700ms linear infinite;
+    }
+}
+
+@keyframes girar { to { rotate: 360deg; } }
+
+/* #112: con «reducir movimiento» activado no se mueve nada; el cambio de color queda */
+@media (prefers-reduced-motion: reduce) {
+    button, summary, .boton, .tarjeta-enlace { transition: none; }
+    button:active, summary:active, .boton:active, .tarjeta-enlace:active { scale: none; }
+    button[data-loading]::before, form[data-loading] button[type='submit']::before { animation: none; border-right-color: currentColor; opacity: 0.6; }
+}
+
+@layer base {
+
     table { @apply w-full border-collapse mb-6 text-sm; }
     th { @apply text-left border-b-2 border-borde px-2 py-2; }
     td { @apply border-b border-borde px-2 py-2 align-top; }

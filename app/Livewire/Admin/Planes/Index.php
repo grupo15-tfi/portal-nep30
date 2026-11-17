@@ -44,7 +44,7 @@ class Index extends Component
     {
         return [
             'nombre'           => ['required', 'string', 'max:150', Rule::unique('planes_estudio', 'nombre')->ignore($this->planId)],
-            'tipo'             => ['required', Rule::in(['formacion_profesional', 'terminalidad'])],
+            'tipo'             => ['required', Rule::in(array_keys(PlanEstudio::TIPOS))],
             'descripcion'      => ['nullable', 'string'],
             'duracionMeses'    => ['nullable', 'integer', 'between:1,255'],
             'cantidadCiclos'   => ['nullable', 'integer', 'between:1,6'],

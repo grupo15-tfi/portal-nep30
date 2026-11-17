@@ -15,6 +15,9 @@
             </div>
         @endforeach
         <p class="text-texto-suave">Mínimo 8 caracteres.</p>
-        <button type="submit" class="self-start rounded bg-primario px-5 py-3 font-semibold text-white">Cambiar contraseña</button>
+        <button type="submit" class="self-start rounded bg-primario px-5 py-3 font-semibold text-white" wire:loading.attr="disabled" wire:target="guardar">
+                        <span wire:loading.remove wire:target="guardar">Cambiar contraseña</span>
+                        <span wire:loading wire:target="guardar">Guardando…</span>
+                    </button>
     </form>
 </section>

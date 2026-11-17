@@ -59,4 +59,10 @@ class User extends Authenticatable
 
         return $ruta ? route($ruta) : null;
     }
+
+        /** HU09: inscripciones del alumno a cursos (activas, de baja o finalizadas) */
+    public function inscripciones(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Inscripcion::class, 'alumno_id');
+    }
 }

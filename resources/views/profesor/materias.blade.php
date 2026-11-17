@@ -16,7 +16,7 @@
 
         <table class="tabla-apilada">
             <thead>
-                <tr><th>Materia</th><th>Curso</th><th>Sede</th><th>Turno</th><th>Horario</th></tr>
+                <tr><th>Materia</th><th>Curso</th><th>Sede</th><th>Turno</th><th>Horario</th><th>Acciones</th></tr>
             </thead>
             <tbody>
                 @foreach ($asignaciones as $a)
@@ -31,6 +31,13 @@
                         <td data-etiqueta="Sede">{{ $a->curso->sede->nombre }}</td>
                         <td data-etiqueta="Turno">{{ ucfirst($a->curso->turno) }}</td>
                         <td data-etiqueta="Horario" class="md:whitespace-nowrap">{{ MisMateriasController::horario($a->curso) }}</td>
+                        <td data-etiqueta="Acciones">
+                            {{-- HU11 (#91) y HU13 (#94) --}}
+                            <span class="flex flex-wrap gap-x-4">
+                                <a href="{{ route('profesor.notas', $a) }}" class="text-primario underline">Notas<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
+                                <a href="{{ route('profesor.asistencia', $a) }}" class="text-primario underline">Asistencia<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
+                            </span>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

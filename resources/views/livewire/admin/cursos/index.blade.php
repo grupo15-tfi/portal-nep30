@@ -127,7 +127,10 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardar">{{ $cursoId ? 'Guardar cambios' : 'Crear curso' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardar">
+                        <span wire:loading.remove wire:target="guardar">{{ $cursoId ? 'Guardar cambios' : 'Crear curso' }}</span>
+                        <span wire:loading wire:target="guardar">Guardando…</span>
+                    </button>
                     <button type="button" wire:click="limpiar">Cancelar</button>
                 </div>
             </form>

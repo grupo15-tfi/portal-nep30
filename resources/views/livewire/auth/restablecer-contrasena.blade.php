@@ -1,7 +1,7 @@
 <div>
     @if ($listo)
         <p role="status" class="mb-4">Tu contraseña se cambió. Ya podés ingresar con la nueva.</p>
-        <p class="text-center"><a href="{{ route('login') }}" class="rounded bg-primario text-white px-4 py-2 font-semibold inline-block">Ir a ingresar</a></p>
+        <p class="text-center"><a href="{{ route('login') }}" class="boton rounded bg-primario text-white px-4 py-2 font-semibold inline-block">Ir a ingresar</a></p>
     @else
         <form wire:submit="guardar" class="flex flex-col gap-4">
             <div class="flex flex-col gap-1">

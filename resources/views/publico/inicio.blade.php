@@ -22,8 +22,8 @@
                 </h1>
                 <div class="max-w-2xl text-lg mb-6">{!! nl2br(e($seccion->contenido)) !!}</div>
                 <p class="flex flex-col gap-3 sm:flex-row sm:flex-wrap mb-0">
-                    <a href="{{ route('oferta') }}" class="inline-flex min-h-11 items-center justify-center rounded bg-primario px-5 py-2.5 font-semibold text-white hover:bg-primario/90">Ver oferta educativa</a>
-                    <a href="{{ $urlSedes }}" class="inline-flex min-h-11 items-center justify-center rounded border-2 border-primario bg-white px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Encontrar mi sede más cercana</a>
+                    <a href="{{ route('oferta') }}" class="boton inline-flex min-h-11 items-center justify-center rounded bg-primario px-5 py-2.5 font-semibold text-white hover:bg-primario/90">Ver oferta educativa</a>
+                    <a href="{{ $urlSedes }}" class="boton inline-flex min-h-11 items-center justify-center rounded border-2 border-primario bg-white px-5 py-2 font-semibold text-primario hover:bg-primario-claro">Encontrar mi sede más cercana</a>
                 </p>
             </div>
             {{-- Foto real de la sede, con autorización (Ley 25.326), y video de YouTube (HU10). Sin ninguno, no se muestra nada. --}}
@@ -65,7 +65,7 @@
         <p class="mb-1 text-sm font-bold uppercase tracking-wider text-primario">Oferta educativa {{ $anio }}</p>
         <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 id="titulo-cursos" class="m-0 font-titulos text-2xl md:text-3xl font-semibold text-primario">¿Qué querés estudiar?</h2>
-            <a href="{{ route('oferta') }}" class="inline-flex min-h-11 items-center rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ver toda la oferta por sede</a>
+            <a href="{{ route('oferta') }}" class="boton inline-flex min-h-11 items-center rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ver toda la oferta por sede</a>
         </div>
 
         @if ($cursos->isEmpty())
@@ -79,7 +79,7 @@
         @endif
 
         @if ($terminalidad->isNotEmpty())
-            <a href="{{ route('oferta') }}" class="mt-4 flex flex-col gap-1 rounded-lg border-2 border-primario bg-white p-4 hover:bg-primario-claro sm:flex-row sm:items-center sm:gap-4">
+            <a href="{{ route('oferta') }}" class="tarjeta-enlace mt-4 flex flex-col gap-1 rounded-lg border-2 border-primario bg-white p-4 hover:bg-primario-claro sm:flex-row sm:items-center sm:gap-4">
                 <span class="font-semibold text-primario">Terminalidad primaria para adultos</span>
                 <span class="text-texto-suave sm:flex-1">{{ $terminalidad->implode(' · ') }}</span>
                 <span class="font-semibold text-primario">Ver sedes y horarios →</span>
@@ -92,7 +92,7 @@
         <p class="mb-1 text-sm font-bold uppercase tracking-wider text-primario">Actualidad</p>
         <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 id="titulo-noticias" class="m-0 font-titulos text-2xl md:text-3xl font-semibold text-primario">Últimas noticias</h2>
-            <a href="{{ route('noticias.index') }}" class="inline-flex min-h-11 items-center rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ver todas las noticias</a>
+            <a href="{{ route('noticias.index') }}" class="boton inline-flex min-h-11 items-center rounded border-2 border-primario px-4 py-1.5 font-semibold text-primario hover:bg-primario-claro">Ver todas las noticias</a>
         </div>
 
         @if ($noticias->isEmpty())
@@ -112,6 +112,6 @@
             <h2 id="titulo-preinscripcion" class="m-0 mb-2 text-white font-titulos text-2xl md:text-3xl font-semibold">Preinscribite en línea</h2>
             <p class="m-0 max-w-2xl">Elegí curso, sede y turno. Te confirmamos por correo y, si no hay cupo, quedás en la lista de espera por orden de llegada.</p>
         </div>
-        <a href="{{ route('oferta') }}" class="mt-5 inline-flex min-h-11 shrink-0 items-center justify-center rounded bg-white px-5 py-2.5 font-semibold text-primario hover:bg-primario-claro md:mt-0">Empezar preinscripción</a>
+        <a href="{{ route('oferta') }}" class="boton mt-5 inline-flex min-h-11 shrink-0 items-center justify-center rounded bg-white px-5 py-2.5 font-semibold text-primario hover:bg-primario-claro md:mt-0">Empezar preinscripción</a>
     </section>
 @endsection

@@ -19,7 +19,10 @@
         </div>
 
         <button type="submit" class="rounded bg-primario text-white px-4 py-2 font-semibold"
-                wire:loading.attr="disabled">Ingresar</button>
+                wire:loading.attr="disabled" wire:target="ingresar">
+            <span wire:loading.remove wire:target="ingresar">Ingresar</span>
+            <span wire:loading wire:target="ingresar">Ingresando…</span>
+        </button>
 
         {{-- Aparece solo cuando exista la ruta de recuperación (#15) --}}
         @if (Route::has('password.request'))

@@ -49,7 +49,7 @@
             @endif
 
             @if ($preinscripcion)
-                <a href="{{ $preinscripcion }}" class="mt-2 rounded bg-primario text-white text-center font-semibold px-4 py-2.5 hover:bg-primario/90">
+                <a href="{{ $preinscripcion }}" class="boton mt-2 rounded bg-primario text-white text-center font-semibold px-4 py-2.5 hover:bg-primario/90">
                     {{ $curso->con_lista_espera ? 'Anotarme en la lista de espera' : 'Preinscribirme' }}
                 </a>
             @else

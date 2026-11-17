@@ -27,6 +27,7 @@
             ['Cursos', 'admin.cursos'],
             ['Profesores', 'admin.profesores.index'],       // HU08
             ['Preinscripciones', 'admin.preinscripciones'], // HU09
+            ['Alumnos', 'admin.alumnos'],                   // HU09 (#88)
             ['Noticias', 'admin.noticias'],                 // HU10 (#75)
             ['Contenidos', 'admin.contenidos'],             // HU10 (#75)
             ['Calendario', 'admin.calendario'],             // HU10 (#75)
@@ -35,13 +36,13 @@
         'profesor' => [
             ['Inicio', 'profesor.inicio'],
             ['Mis materias', 'profesor.materias'],          // HU08 (#54)
-            ['Mis cursos', 'profesor.cursos'],              // HU11
-            ['Asistencia', 'profesor.asistencia'],          // HU13
+            // HU11 y HU13: notas y asistencia se abren desde cada fila de «Mis materias» (la ruta lleva la materia)
             ['Tareas', 'profesor.tareas'],                  // HU12
         ],
         'alumno' => [
             ['Inicio', 'alumno.inicio'],
-            ['Mis cursos y notas', 'alumno.cursos'],        // HU11
+            ['Mis notas', 'alumno.notas'],                  // HU11 (#91)
+            ['Mi asistencia', 'alumno.asistencia'],         // HU13 (#94)
             ['Tareas', 'alumno.tareas'],                    // HU12
             ['Historial académico', 'alumno.historial'],    // HU17
         ],

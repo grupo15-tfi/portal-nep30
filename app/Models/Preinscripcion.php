@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * HU04 (#51): solicitud de un aspirante a un curso. No es un usuario: el aspirante
@@ -32,6 +33,12 @@ class Preinscripcion extends Model
     public function curso(): BelongsTo
     {
         return $this->belongsTo(Curso::class);
+    }
+
+    /** La inscripción que nació de esta preinscripción (HU09), si ya se dio de alta */
+    public function inscripcion(): HasOne
+    {
+        return $this->hasOne(Inscripcion::class);
     }
 
     public function enEspera(): bool

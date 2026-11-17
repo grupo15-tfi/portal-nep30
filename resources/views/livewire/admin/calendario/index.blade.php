@@ -105,7 +105,10 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2 max-w-none">
-                    <button type="submit" wire:loading.attr="disabled" wire:target="guardar">{{ $eventoId ? 'Guardar cambios' : 'Guardar evento' }}</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardar">
+                        <span wire:loading.remove wire:target="guardar">{{ $eventoId ? 'Guardar cambios' : 'Guardar evento' }}</span>
+                        <span wire:loading wire:target="guardar">Guardando…</span>
+                    </button>
                     @if ($eventoId)
                         <button type="button" wire:click="limpiar">Cancelar</button>
                     @endif
