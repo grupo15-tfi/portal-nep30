@@ -48,6 +48,12 @@ class Inscripcion extends Model
         return $this->hasMany(InscripcionMateria::class);
     }
 
+    /** HU12: las entregas de tareas del alumno en este curso */
+    public function entregas(): HasMany
+    {
+        return $this->hasMany(Entrega::class);
+    }
+    
     public function scopeActivas(Builder $query): Builder
     {
         return $query->where('estado', 'activa');
