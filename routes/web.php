@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Campus\ArchivosDeTareasController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\Profesor\MisMateriasController;
 use App\Http\Controllers\SedesController;
@@ -101,6 +101,12 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     // HU13 (#94): su asistencia por materia
     Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
     // Historias del rol Alumno: sus rutas van acá
+});
+
+// HU12 (#119): descargas de tareas y entregas. Las controla el controlador (profesor de la asignación o alumno del curso).
+Route::middleware('auth')->prefix('campus')->group(function () {
+    Route::get('/tareas/{tarea}/archivo', [ArchivosDeTareasController::class, 'consigna'])->name('tareas.archivo');
+    Route::get('/entregas/{entrega}/archivo', [ArchivosDeTareasController::class, 'entrega'])->name('entregas.archivo');
 });
 
 Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')->group(function () {
