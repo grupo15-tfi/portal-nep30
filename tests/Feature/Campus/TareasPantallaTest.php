@@ -13,7 +13,6 @@ use App\Models\Tarea;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -62,13 +61,6 @@ class TareasPantallaTest extends TestCase
         $insc = Inscripcion::whereHas('alumno', fn ($q) => $q->where('email', $email))->where('curso_id', $tarea->cursoProfesor->curso_id)->firstOrFail();
 
         return EntregarTarea::ejecutar($tarea, $insc, UploadedFile::fake()->create('entrega.pdf', 200, 'application/pdf'));
-    }
-
-    private function rutasDeDescarga(): void
-    {
-        Route::middleware(['web', 'auth'])->get('/campus/tareas/{tarea}/archivo', fn () => 'ok')->name('tareas.archivo');
-        Route::middleware(['web', 'auth'])->get('/campus/entregas/{entrega}/archivo', fn () => 'ok')->name('entregas.archivo');
-        Route::getRoutes()->refreshNameLookups();
     }
 
     public function test_cada_rol_entra_solo_a_su_pantalla_y_tiene_el_menu(): void
@@ -153,7 +145,8 @@ class TareasPantallaTest extends TestCase
 
     public function test_una_entrega_vencida_aparece_fuera_de_termino_en_rojo(): void
     {
-        $tarea = $this->tarea('TP vencido', -1);
+        $tarea = $this->tarea('TP vencido', 1);
+        $this->travel(2)->days();
         $this->entregar($tarea, 'alumno@nep30.test');
 
         Livewire::actingAs($this->usuario('profesor@nep30.test'))->test(TareasProfesor::class)
@@ -254,14 +247,6 @@ class TareasPantallaTest extends TestCase
             'archivo' => UploadedFile::fake()->create('c.pdf', 50, 'application/pdf'),
         ]);
         $this->entregar($tarea, 'alumno@nep30.test');
-
-        // Sin las rutas de #119 los botones no aparecen (no hay enlaces rotos)
-        Livewire::actingAs($this->usuario('profesor@nep30.test'))->test(TareasProfesor::class)
-            ->call('verEntregas', $tarea->id)->assertDontSee('Descargar');
-        Livewire::actingAs($this->usuario('alumno@nep30.test'))->test(TareasAlumno::class)
-            ->assertDontSee('Descargar consigna')->assertDontSee('Ver mi entrega');
-
-        $this->rutasDeDescarga();
 
         Livewire::actingAs($this->usuario('profesor@nep30.test'))->test(TareasProfesor::class)
             ->call('verEntregas', $tarea->id)->assertSee('Descargar');
