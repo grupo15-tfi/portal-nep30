@@ -79,7 +79,7 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/noticias', 'admin.noticias')->name('noticias');
     Route::view('/contenidos', 'admin.contenidos')->name('contenidos');
     Route::view('/calendario', 'admin.calendario')->name('calendario');
-        // HU17 (#126): historial académico en PDF de cualquier inscripción
+    // HU17 (#126): historial académico en PDF de cualquier inscripción
     Route::get('/alumnos/{inscripcion}/historial', [HistorialPdfController::class, 'admin'])->name('alumnos.historial');
     
 });
@@ -107,9 +107,11 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
     // HU12 (#120): sus tareas y entregas
     Route::view('/tareas', 'alumno.tareas')->name('tareas');
-    // Historias del rol Alumno: sus rutas van acá
-        // HU17 (#126): su historial académico en PDF (solo de una inscripción propia)
+    // HU17 (#126): su historial académico en PDF (solo de una inscripción propia)
     Route::get('/historial/{inscripcion}/pdf', [HistorialPdfController::class, 'alumno'])->name('historial.pdf');
+    // HU17 (#127): su historial académico
+    Route::view('/historial', 'alumno.historial')->name('historial');
+    // Historias del rol Alumno: sus rutas van acá
 });
 
 // HU12 (#119): descargas de tareas y entregas. Las controla el controlador (profesor de la asignación o alumno del curso).
