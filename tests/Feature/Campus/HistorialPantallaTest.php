@@ -7,7 +7,6 @@ use App\Livewire\Alumno\Historial;
 use App\Models\Inscripcion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -25,14 +24,6 @@ class HistorialPantallaTest extends TestCase
     private function alumna(): User
     {
         return User::where('email', 'alumno@nep30.test')->firstOrFail();
-    }
-
-    /** Simula las rutas del PDF de #126 (mismos nombres y direcciones del contrato) */
-    private function rutasDelPdf(): void
-    {
-        Route::middleware(['web', 'auth', 'role:alumno'])->get('/alumno/historial/{inscripcion}/pdf', fn () => 'pdf')->name('alumno.historial.pdf');
-        Route::middleware(['web', 'auth', 'role:administrador'])->get('/admin/alumnos/{inscripcion}/historial', fn () => 'pdf')->name('admin.alumnos.historial');
-        Route::getRoutes()->refreshNameLookups();
     }
 
     public function test_solo_el_alumno_entra_y_tiene_el_menu(): void
@@ -93,10 +84,6 @@ class HistorialPantallaTest extends TestCase
 
     public function test_el_boton_descargar_pdf_apunta_a_la_ruta_de_cada_inscripcion(): void
     {
-        // Sin las rutas de #126 todavía, no hay botón (nada se rompe)
-        Livewire::actingAs($this->alumna())->test(Historial::class)->assertDontSee('Descargar PDF');
-
-        $this->rutasDelPdf();
         $insc = Inscripcion::where('alumno_id', $this->alumna()->id)->firstOrFail();
 
         Livewire::actingAs($this->alumna())->test(Historial::class)
@@ -107,9 +94,6 @@ class HistorialPantallaTest extends TestCase
     public function test_el_administrador_tiene_historial_pdf_en_cada_fila_de_alumnos(): void
     {
         $admin = User::where('email', 'admin@nep30.test')->firstOrFail();
-        Livewire::actingAs($admin)->test(AlumnosAdmin::class)->assertDontSee('Historial (PDF)');
-
-        $this->rutasDelPdf();
         $insc = Inscripcion::firstOrFail();
 
         Livewire::actingAs($admin)->test(AlumnosAdmin::class)
