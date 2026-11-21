@@ -115,6 +115,8 @@ Route::middleware('auth')->prefix('campus')->group(function () {
 
 Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU18 (#129): resumen por sede, de solo lectura (la pantalla es de #130)
+    Route::view('/sedes', 'auditor.sedes')->name('sedes');
     // Historias del rol Auditor: sus rutas van acá
 });
 
