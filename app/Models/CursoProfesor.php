@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Asignación de un profesor a una materia de un curso (HU08 #13).
@@ -29,5 +30,10 @@ class CursoProfesor extends Model
     public function profesor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'profesor_id');
+    }
+    /** HU12: las tareas publicadas en esta asignación */
+    public function tareas(): HasMany
+    {
+        return $this->hasMany(Tarea::class);
     }
 }
