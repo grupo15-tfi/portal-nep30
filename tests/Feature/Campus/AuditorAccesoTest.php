@@ -1,7 +1,7 @@
 <?php
 
 namespace Tests\Feature\Campus;
-
+use App\Models\Inscripcion;
 use App\Models\CursoProfesor;
 use App\Models\Sede;
 use App\Models\User;
@@ -80,9 +80,10 @@ class AuditorAccesoTest extends TestCase
         $this->actingAs($this->usuario('auditor@nep30.test'));
 
         // Valores reales para las rutas con parámetros, así responde el permiso y no un 404
-        $parametros = [
+                $parametros = [
             'profesor'      => $this->usuario('profesor@nep30.test')->id,
             'cursoProfesor' => CursoProfesor::query()->value('id'),
+            'inscripcion'   => Inscripcion::query()->value('id'),
         ];
 
         $revisadas = collect(Route::getRoutes()->getRoutes())
