@@ -6,7 +6,6 @@ use App\Livewire\Auditor\Sedes;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -71,15 +70,12 @@ class AuditorSedesTest extends TestCase
 
     public function test_la_pagina_del_auditor_usa_el_panel(): void
     {
-        // La ruta real la registra #129 (Benitez); acá se simula igual para probar la página
-        Route::middleware(['web', 'auth', 'role:auditor'])->get('/auditor/sedes-prueba', fn () => view('auditor.sedes'));
-
         // El administrador se crea antes de iniciar sesión como auditor: la base no deja escribir al Auditor
         $admin = User::factory()->conRol('administrador')->create();
 
-        $this->get('/auditor/sedes-prueba')->assertRedirect(route('login'));
-        $this->actingAs($this->auditor())->get('/auditor/sedes-prueba')
+        $this->get(route('auditor.sedes'))->assertRedirect(route('login'));
+        $this->actingAs($this->auditor())->get(route('auditor.sedes'))
             ->assertOk()->assertSee('Resumen por sede')->assertSee('Total');
-        $this->actingAs($admin)->get('/auditor/sedes-prueba')->assertForbidden();
+        $this->actingAs($admin)->get(route('auditor.sedes'))->assertForbidden();
     }
 }
