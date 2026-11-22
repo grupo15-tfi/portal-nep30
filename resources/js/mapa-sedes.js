@@ -29,6 +29,8 @@ function iniciar(raiz) {
     let localidades = [];
 
     // ---------- Mapa ----------
+    // #149: sin JavaScript la sección del mapa queda oculta; se muestra antes de crear el mapa para que Leaflet mida bien el tamaño.
+    document.getElementById('seccion-mapa').hidden = false;
     const mapa = L.map('mapa-sedes', { scrollWheelZoom: false }).setView([-26.1775, -58.1781], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
