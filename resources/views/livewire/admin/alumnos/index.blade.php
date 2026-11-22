@@ -68,14 +68,21 @@
                             </div>
                         </td>
                         <td data-etiqueta="Acciones">
-                            @if ($inscripcion->estado === 'activa')
-                                <button type="button" wire:click="abrirBaja({{ $inscripcion->id }})"
-                                        class="border-error text-error hover:bg-error-claro">
-                                    Dar de baja<span class="sr-only">: {{ $inscripcion->alumno->nombreCompleto() }}</span>
-                                </button>
-                            @else
-                                —
-                            @endif
+                            <div class="flex flex-wrap items-center gap-2">
+                                {{-- HU17 (#127): el PDF lo genera #126; el botón aparece cuando existe su ruta --}}
+                                @if (\Illuminate\Support\Facades\Route::has('admin.alumnos.historial'))
+                                    <a href="{{ route('admin.alumnos.historial', $inscripcion) }}"
+                                       class="boton inline-flex items-center rounded border border-primario px-3 py-1.5 font-semibold text-primario no-underline hover:bg-primario-claro">
+                                        Historial (PDF)<span class="sr-only">: {{ $inscripcion->alumno->nombreCompleto() }}</span>
+                                    </a>
+                                @endif
+                                @if ($inscripcion->estado === 'activa')
+                                    <button type="button" wire:click="abrirBaja({{ $inscripcion->id }})"
+                                            class="border-error text-error hover:bg-error-claro">
+                                        Dar de baja<span class="sr-only">: {{ $inscripcion->alumno->nombreCompleto() }}</span>
+                                    </button>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

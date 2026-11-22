@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Actions\Alumnos\DarDeAlta;
 use App\Actions\Alumnos\DarDeBaja;
 use App\Actions\Preinscripciones\AprobarPreinscripcion;
+use App\Actions\Preinscripciones\RegistrarDocumentacion;
 use App\Models\Preinscripcion;
 use App\Models\User;
 use App\Notifications\CrearContrasena;
@@ -31,9 +32,15 @@ class AlumnosAccionesTest extends TestCase
         $this->actingAs(User::factory()->conRol('administrador')->create());
     }
 
+    /** Aprobada y con la documentación presentada (#107): lista para el alta */
     private function aprobada(string $dni = '30000005'): Preinscripcion
     {
-        return AprobarPreinscripcion::ejecutar(Preinscripcion::where('dni', $dni)->where('estado', '<>', 'aprobada')->firstOrFail());
+        return $this->conDocumentacion(Preinscripcion::where('dni', $dni)->where('estado', '<>', 'aprobada')->firstOrFail());
+    }
+
+    private function conDocumentacion(Preinscripcion $p): Preinscripcion
+    {
+        return RegistrarDocumentacion::ejecutar(AprobarPreinscripcion::ejecutar($p), true);
     }
 
     private function errores(callable $accion): array
@@ -86,7 +93,7 @@ class AlumnosAccionesTest extends TestCase
             'fecha_nacimiento' => '1995-08-20', 'email' => 'alumno@nep30.test',
             'telefono' => '3704 111111', 'acepta_privacidad' => true,
         ]);
-        AprobarPreinscripcion::ejecutar($p->refresh());
+        $this->conDocumentacion($p->refresh());
 
         DarDeAlta::ejecutar($p->fresh());
 
@@ -103,7 +110,7 @@ class AlumnosAccionesTest extends TestCase
             'fecha_nacimiento' => '1980-01-01', 'email' => 'otro.correo@nep30.test',
             'telefono' => '3704 111111', 'acepta_privacidad' => true,
         ]);
-        AprobarPreinscripcion::ejecutar($p->refresh());
+        $this->conDocumentacion($p->refresh());
 
         $this->assertArrayHasKey('alta', $this->errores(fn () => DarDeAlta::ejecutar($p->fresh())));
         $this->assertNull($p->fresh()->inscripcion);
@@ -132,7 +139,7 @@ class AlumnosAccionesTest extends TestCase
             'fecha_nacimiento' => '1995-08-20', 'email' => 'alumno@nep30.test',
             'telefono' => '3704 111111', 'acepta_privacidad' => true,
         ]);
-        AprobarPreinscripcion::ejecutar($p->refresh());
+        $this->conDocumentacion($p->refresh());
         DarDeAlta::ejecutar($p->fresh());
 
         $peluqueria = $this->alumna()->inscripciones()->where('curso_id', '<>', $p->curso_id)->sole();

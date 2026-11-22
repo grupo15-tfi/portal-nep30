@@ -1,5 +1,6 @@
 <?php
-
+use App\Http\Controllers\Campus\HistorialPdfController;
+use App\Http\Controllers\Campus\ArchivosDeTareasController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\Profesor\MisMateriasController;
 use App\Http\Controllers\SedesController;
@@ -78,7 +79,10 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/noticias', 'admin.noticias')->name('noticias');
     Route::view('/contenidos', 'admin.contenidos')->name('contenidos');
     Route::view('/calendario', 'admin.calendario')->name('calendario');
-    
+    // HU17 (#126): historial académico en PDF de cualquier inscripción
+    Route::get('/alumnos/{inscripcion}/historial', [HistorialPdfController::class, 'admin'])->name('alumnos.historial');
+    // HU16 (#123): registro de auditoría
+    Route::view('/auditoria', 'admin.auditoria')->name('auditoria');
 });
 
 Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
@@ -91,6 +95,8 @@ Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor
     // HU13 (#94): tomar y corregir asistencia de una de sus materias
     Route::get('/materias/{cursoProfesor}/asistencia', fn (CursoProfesor $cursoProfesor) => view('profesor.asistencia', ['cursoProfesor' => $cursoProfesor]))
         ->name('asistencia');
+    // HU12 (#120): publicar tareas y revisar entregas
+    Route::view('/tareas', 'profesor.tareas')->name('tareas');
     // Historias del rol Profesor: sus rutas van acá
 });
 
@@ -100,11 +106,27 @@ Route::middleware(['auth', 'role:alumno'])->prefix('alumno')->name('alumno.')->g
     Route::view('/notas', 'alumno.notas')->name('notas');
     // HU13 (#94): su asistencia por materia
     Route::view('/asistencia', 'alumno.asistencia')->name('asistencia');
+    // HU12 (#120): sus tareas y entregas
+    Route::view('/tareas', 'alumno.tareas')->name('tareas');
+    // HU17 (#126): su historial académico en PDF (solo de una inscripción propia)
+    Route::get('/historial/{inscripcion}/pdf', [HistorialPdfController::class, 'alumno'])->name('historial.pdf');
+    // HU17 (#127): su historial académico
+    Route::view('/historial', 'alumno.historial')->name('historial');
     // Historias del rol Alumno: sus rutas van acá
+});
+
+// HU12 (#119): descargas de tareas y entregas. Las controla el controlador (profesor de la asignación o alumno del curso).
+Route::middleware('auth')->prefix('campus')->group(function () {
+    Route::get('/tareas/{tarea}/archivo', [ArchivosDeTareasController::class, 'consigna'])->name('tareas.archivo');
+    Route::get('/entregas/{entrega}/archivo', [ArchivosDeTareasController::class, 'entrega'])->name('entregas.archivo');
 });
 
 Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')->group(function () {
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
+    // HU18 (#129): resumen por sede, de solo lectura (la pantalla es de #130)
+    Route::view('/sedes', 'auditor.sedes')->name('sedes');
+    // HU18 (#123, desde #129): el registro de auditoría, la misma pantalla de la HU16
+    Route::view('/auditoria', 'auditor.auditoria')->name('auditoria');
     // Historias del rol Auditor: sus rutas van acá
 });
 
