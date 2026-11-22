@@ -81,7 +81,8 @@ Route::middleware(['auth', 'role:administrador'])->prefix('admin')->name('admin.
     Route::view('/calendario', 'admin.calendario')->name('calendario');
     // HU17 (#126): historial académico en PDF de cualquier inscripción
     Route::get('/alumnos/{inscripcion}/historial', [HistorialPdfController::class, 'admin'])->name('alumnos.historial');
-    
+    // HU16 (#123): registro de auditoría
+    Route::view('/auditoria', 'admin.auditoria')->name('auditoria');
 });
 
 Route::middleware(['auth', 'role:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
@@ -124,6 +125,8 @@ Route::middleware(['auth', 'role:auditor'])->prefix('auditor')->name('auditor.')
     Route::get('/inicio', fn () => view('panel.inicio'))->name('inicio');
     // HU18 (#129): resumen por sede, de solo lectura (la pantalla es de #130)
     Route::view('/sedes', 'auditor.sedes')->name('sedes');
+    // HU18 (#123, desde #129): el registro de auditoría, la misma pantalla de la HU16
+    Route::view('/auditoria', 'auditor.auditoria')->name('auditoria');
     // Historias del rol Auditor: sus rutas van acá
 });
 
