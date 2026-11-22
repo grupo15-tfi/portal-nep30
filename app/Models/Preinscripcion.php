@@ -28,6 +28,7 @@ class Preinscripcion extends Model
         'fecha_nacimiento'      => 'date',
         'acepta_privacidad'     => 'boolean',
         'ultimo_ciclo_aprobado' => 'integer',
+        'documentacion_en'      => 'datetime',
     ];
 
     public function curso(): BelongsTo
@@ -39,6 +40,18 @@ class Preinscripcion extends Model
     public function inscripcion(): HasOne
     {
         return $this->hasOne(Inscripcion::class);
+    }
+
+    /** #107: quién registró la documentación presentada */
+    public function documentacionRegistradaPor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'documentacion_por');
+    }
+
+    /** #107: ya se registró que el aspirante presentó la documentación en papel */
+    public function documentacionPresentada(): bool
+    {
+        return $this->documentacion_en !== null;
     }
 
     public function enEspera(): bool

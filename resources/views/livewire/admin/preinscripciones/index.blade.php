@@ -69,9 +69,17 @@
                                             wire:confirm="¿Aprobar la preinscripción de {{ $p->apellido }}, {{ $p->nombre }}? Se le envía un correo.">Aprobar</button>
                                     <button type="button" wire:click="abrirRechazo({{ $p->id }})">Rechazar</button>
                                 @endif
+                                {{-- #107: primero se registra la documentación en papel; recién ahí aparece «Dar de alta» --}}
                                 @if ($p->estado === 'aprobada' && ! $p->inscripcion)
-                                    <button type="button" wire:click="darDeAlta({{ $p->id }})"
-                                            wire:confirm="¿Dar de alta a {{ $p->apellido }}, {{ $p->nombre }}? Se crea su usuario y ocupa un lugar del cupo.">Dar de alta</button>
+                                    <button type="button" wire:click="abrirDocumentacion({{ $p->id }})">
+                                        {{ $p->documentacionPresentada() ? 'Documentación' : 'Registrar documentación' }}<span class="sr-only">: {{ $p->apellido }}, {{ $p->nombre }}</span>
+                                    </button>
+                                    @if ($p->documentacionPresentada())
+                                        <button type="button" wire:click="darDeAlta({{ $p->id }})"
+                                                wire:confirm="¿Dar de alta a {{ $p->apellido }}, {{ $p->nombre }}? Se crea su usuario y ocupa un lugar del cupo.">Dar de alta</button>
+                                    @else
+                                        <span class="text-sm text-texto-suave">Falta la documentación</span>
+                                    @endif
                                 @endif
                             </div>
                         </td>
@@ -144,6 +152,19 @@
                 @if ($detalle->observacion)
                     <dt>Motivo</dt><dd>{{ $detalle->observacion }}</dd>
                 @endif
+                {{-- #107: estado de la documentación en papel (el sistema no guarda copias) --}}
+                @if ($detalle->estado === 'aprobada')
+                    <dt>Documentación</dt>
+                    <dd>
+                        @if ($detalle->documentacionPresentada())
+                            Presentada · registrada el {{ $detalle->documentacion_en->format('d/m/Y H:i') }}
+                            por {{ $detalle->documentacionRegistradaPor?->nombreCompleto() ?? '—' }}
+                            @if ($detalle->documentacion_obs)<br>{{ $detalle->documentacion_obs }}@endif
+                        @else
+                            Falta registrar la documentación presentada
+                        @endif
+                    </dd>
+                @endif
             </dl>
             <div class="mt-4 flex justify-end">
                 <button type="button" wire:click="cerrar">Cerrar</button>
@@ -171,9 +192,31 @@
         </x-ventana>
     @endif
 
-    {{-- Errores de aprobar, alta o aviso (vienen de la #86) --}}
-    @foreach (['estado', 'cupo', 'alta'] as $clave)
-        @if (! $aRechazar)
+    {{-- #107: documentación presentada (casilla y observación opcional) --}}
+    @if ($aDocumentar)
+        <x-ventana titulo="Documentación de {{ $aDocumentar->apellido }}, {{ $aDocumentar->nombre }}" id="titulo-documentacion">
+            <p class="text-texto-suave">Marcala cuando el aspirante entregue los papeles en la escuela. El sistema no guarda copias de los documentos.</p>
+            <form wire:submit="guardarDocumentacion">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" wire:model="presentada">
+                    Documentación presentada
+                </label>
+                <label for="observacion-doc">Observación (opcional)</label>
+                <textarea id="observacion-doc" wire:model="observacionDoc" rows="2" maxlength="300"
+                          placeholder="Ej.: falta el certificado, lo trae el lunes" aria-describedby="error-observacion-doc"></textarea>
+                @error('documentacion_obs') <p id="error-observacion-doc" class="text-error">{{ $message }}</p> @enderror
+                @error('documentacion') <p role="alert" class="text-error">{{ $message }}</p> @enderror
+                <div class="mt-4 flex justify-end gap-2">
+                    <button type="button" wire:click="cerrar">Cancelar</button>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="guardarDocumentacion">Guardar</button>
+                </div>
+            </form>
+        </x-ventana>
+    @endif
+
+    {{-- Errores de aprobar, alta o aviso (vienen de la #86) y de la documentación (#107) --}}
+    @foreach (['estado', 'cupo', 'alta', 'documentacion'] as $clave)
+        @if (! $aRechazar && ! $aDocumentar)
             @error($clave) <p role="alert" class="text-error">{{ $message }}</p> @enderror
         @endif
     @endforeach

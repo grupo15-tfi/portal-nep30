@@ -10,6 +10,7 @@ use Livewire\WithPagination;
 use App\Actions\Alumnos\DarDeAlta;
 use App\Actions\Preinscripciones\AprobarPreinscripcion;
 use App\Actions\Preinscripciones\RechazarPreinscripcion;
+use App\Actions\Preinscripciones\RegistrarDocumentacion;
 use App\Actions\Preinscripciones\RegistrarAviso;
 
 /**
@@ -36,6 +37,13 @@ class Index extends Component
     public string $motivo = '';
 
     public ?string $aviso = null;
+
+    /** #107: ventana «Documentación» (preinscripción elegida, casilla y observación) */
+    public ?int $documentacionId = null;
+
+    public bool $presentada = false;
+
+    public string $observacionDoc = '';
 
     public const ESTADOS = [
         'pendiente' => 'Pendiente',
@@ -76,8 +84,30 @@ class Index extends Component
 
     public function cerrar(): void
     {
-        $this->reset('verId', 'rechazarId', 'motivo');
+        $this->reset('verId', 'rechazarId', 'motivo', 'documentacionId', 'presentada', 'observacionDoc');
         $this->resetErrorBag();
+    }
+
+    /** #107: abre la ventana con lo que ya está registrado */
+    public function abrirDocumentacion(int $id): void
+    {
+        $p = Preinscripcion::findOrFail($id);
+        $this->verId = null;
+        $this->documentacionId = $p->id;
+        $this->presentada = $p->documentacionPresentada();
+        $this->observacionDoc = (string) $p->documentacion_obs;
+        $this->resetErrorBag();
+    }
+ 
+    public function guardarDocumentacion(): void
+    {
+        $p = Preinscripcion::findOrFail($this->documentacionId);
+        RegistrarDocumentacion::ejecutar($p, $this->presentada, $this->observacionDoc);
+
+        $this->aviso = $this->presentada
+            ? "Documentación de {$p->apellido}, {$p->nombre} registrada. Ya se le puede dar el alta."
+            : "Se desmarcó la documentación de {$p->apellido}, {$p->nombre}.";
+        $this->cerrar();
     }
 
     public function aprobar(int $id): void
@@ -145,7 +175,8 @@ class Index extends Component
             'espera'           => $espera,
             'cursoElegido'     => $cursoElegido,
             'disponibles'      => $cursoElegido?->cupo_disponible,
-            'detalle'          => $this->verId ? Preinscripcion::with(['curso.sede', 'curso.planEstudio'])->find($this->verId) : null,
+            'detalle'          => $this->verId ? Preinscripcion::with(['curso.sede', 'curso.planEstudio', 'inscripcion', 'documentacionRegistradaPor'])->find($this->verId) : null,
+            'aDocumentar'      => $this->documentacionId ? Preinscripcion::find($this->documentacionId) : null,
             'aRechazar'        => $this->rechazarId ? Preinscripcion::find($this->rechazarId) : null,
         ]);
     }
