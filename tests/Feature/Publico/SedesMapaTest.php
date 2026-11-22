@@ -273,6 +273,40 @@ class SedesMapaTest extends TestCase
         $this->assertStringContainsString('aproximadas, en línea recta', $html);
     }
 
+    // #149: en el celular el mapa va primero. El orden está en el HTML (no solo visual), así el lector de pantalla
+    // y el teclado siguen lo que se ve; en pantallas grandes la grilla lo pone a la derecha.
+    public function test_en_el_celular_el_mapa_va_antes_del_buscador_y_la_lista(): void
+    {
+        $this->withoutVite();
+        $html = $this->get(route('sedes.mapa'))->assertOk()->getContent();
+
+        $mapa = strpos($html, 'id="seccion-mapa"');
+        $buscador = strpos($html, 'id="buscar-sede"');
+        $lista = strpos($html, 'id="lista-sedes"');
+        $this->assertNotFalse($mapa);
+        $this->assertTrue($mapa < $buscador && $buscador < $lista, 'El orden tiene que ser mapa → buscador → lista');
+
+        // En lg: buscador y lista a la izquierda, mapa a la derecha, en la misma fila
+        $this->assertMatchesRegularExpression('/id="seccion-mapa"[^>]*class="[^"]*lg:col-start-2 lg:row-start-1/', $html);
+        $this->assertStringContainsString('min-w-0 lg:col-start-1 lg:row-start-1', $html);
+
+        // Con el teclado se puede saltar el mapa (tiene un marcador por sede) e ir directo al buscador
+        $this->assertStringContainsString('<a href="#buscar-sede"', $html);
+        $this->assertStringContainsString('Saltar el mapa e ir al buscador', $html);
+        $this->assertStringContainsString('id="buscar-sede" tabindex="-1"', $html);
+    }
+
+    public function test_sin_javascript_no_queda_un_recuadro_vacio_arriba(): void
+    {
+        $this->withoutVite();
+        $html = $this->get(route('sedes.mapa'))->assertOk()->getContent();
+
+        // La sección del mapa empieza oculta y la muestra el script; sin JavaScript se ven el aviso y la lista
+        $this->assertMatchesRegularExpression('/<section id="seccion-mapa" hidden/', $html);
+        $this->assertStringContainsString("document.getElementById('seccion-mapa').hidden = false;", file_get_contents(resource_path('js/mapa-sedes.js')));
+        $this->assertStringContainsString('Abajo tenés la lista de sedes.', $html);
+    }
+
     public function test_la_lista_muestra_las_sedes_activas_con_su_enlace_a_la_oferta(): void
     {
         $this->withoutVite();

@@ -23,9 +23,20 @@
          data-url-oferta="{{ route('oferta') }}"
          class="grid gap-6 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:items-start">
 
-        <div class="flex flex-col gap-4 min-w-0">
+        {{-- #149: Mapa (Leaflet + OpenStreetMap). En el celular va primero; en pantallas grandes, a la derecha.
+             Va antes en el HTML para que el orden de lectura y del teclado sea el mismo que se ve en el celular.
+             Sin JavaScript no hay mapa: la sección empieza oculta y mapa-sedes.js la muestra. --}}
+        <section id="seccion-mapa" hidden aria-labelledby="titulo-mapa" class="min-w-0 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-4">
+            <h2 id="titulo-mapa" class="sr-only">Mapa de sedes</h2>
+            <a href="#buscar-sede" class="sr-only focus:not-sr-only focus:mb-2 focus:inline-block focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:font-semibold">Saltar el mapa e ir al buscador</a>
+            <div id="mapa-sedes" class="h-80 md:h-[32rem] w-full rounded-lg border border-borde bg-primario-claro"
+                 role="region" aria-label="Mapa de las sedes. Con el teclado: flechas para moverlo, + y − para el zoom, Tab para ir a cada sede."></div>
+            <p class="mt-2 mb-0 text-sm text-texto-suave">Las distancias son aproximadas, en línea recta.</p>
+        </section>
+
+        <div class="flex flex-col gap-4 min-w-0 lg:col-start-1 lg:row-start-1">
             {{-- Buscar la sede más cercana: primero la ubicación del celular, si no, el domicilio --}}
-            <section aria-labelledby="titulo-buscar" class="rounded-lg border border-borde bg-white p-4 md:p-5">
+            <section id="buscar-sede" tabindex="-1" aria-labelledby="titulo-buscar" class="rounded-lg border border-borde bg-white p-4 md:p-5">
                 <h2 id="titulo-buscar" class="text-xl font-semibold mt-0 mb-1">¿Qué sede te queda más cerca?</h2>
                 <p class="text-texto-suave text-sm mb-4">Usamos tu ubicación o tu dirección solo para calcular la distancia. No la guardamos.</p>
 
@@ -95,13 +106,5 @@
                 @endif
             </section>
         </div>
-
-        {{-- Mapa (Leaflet + OpenStreetMap). En el celular va debajo de la lista. --}}
-        <section aria-labelledby="titulo-mapa" class="min-w-0 lg:sticky lg:top-4">
-            <h2 id="titulo-mapa" class="sr-only">Mapa de sedes</h2>
-            <div id="mapa-sedes" class="h-80 md:h-[32rem] w-full rounded-lg border border-borde bg-primario-claro"
-                 role="region" aria-label="Mapa de las sedes. Con el teclado: flechas para moverlo, + y − para el zoom, Tab para ir a cada sede."></div>
-            <p class="mt-2 text-sm text-texto-suave">Las distancias son aproximadas, en línea recta.</p>
-        </section>
     </div>
 @endsection
