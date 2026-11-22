@@ -112,6 +112,7 @@ class PreinscripcionesPantallaTest extends TestCase
         Livewire::actingAs($this->admin())->test(Index::class)
             ->call('aprobar', $p->id)->assertHasNoErrors()
             ->set('estado', 'aprobada')
+            ->call('abrirDocumentacion', $p->id)->set('presentada', true)->call('guardarDocumentacion')   // #107
             ->call('darDeAlta', $p->id)->assertHasNoErrors()
             ->assertSee('quedó inscripto');
 

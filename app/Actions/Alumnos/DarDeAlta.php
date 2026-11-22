@@ -15,6 +15,7 @@ use Throwable;
 /**
  * HU09 (#86): dar de alta una preinscripción aprobada.
  * Contrato (#83): ejecutar(Preinscripcion $p): Inscripcion · errores en `estado`, `cupo` y `alta`.
+ * #107: antes del alta tiene que estar registrada la documentación presentada (error en `documentacion`).
  *
  * En una transacción: crea el usuario Alumno (o reutiliza el del mismo DNI), lo inscribe en el
  * curso y en todas las materias del plan. El cupo lo controla la base (trg_insc_bi, con bloqueo).
@@ -31,7 +32,11 @@ class DarDeAlta
         if ($preinscripcion->inscripcion()->exists()) {
             throw ValidationException::withMessages(['estado' => 'Esta preinscripción ya fue dada de alta.']);
         }
-
+        
+        if (! $preinscripcion->documentacionPresentada()) {
+            throw ValidationException::withMessages(['documentacion' => 'Falta registrar la documentación presentada']);
+        }
+        
         try {
             [$inscripcion, $alumno, $esNuevo] = DB::transaction(function () use ($preinscripcion) {
                 [$alumno, $esNuevo] = self::alumno($preinscripcion);
