@@ -1,5 +1,5 @@
 <div>
-    <p class="mb-2"><a href="{{ route('admin.profesores.index') }}" class="text-primario underline">« Volver a profesores</a></p>
+    <p class="mb-4"><a href="{{ route('admin.profesores.index') }}" class="boton boton-volver">Volver a profesores</a></p>
     <h1>Materias de {{ $profesor->nombreCompleto() }}</h1>
 
     @if ($aviso)

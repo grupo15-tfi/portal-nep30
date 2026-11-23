@@ -1,6 +1,6 @@
 @php use App\Livewire\Profesor\Asistencia; @endphp
 <div>
-    <p class="mb-2"><a href="{{ route('profesor.materias') }}" class="text-primario underline">« Mis materias</a></p>
+    <p class="mb-4"><a href="{{ route('profesor.materias') }}" class="boton boton-volver">Mis materias</a></p>
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="mb-0">Asistencia · {{ $cursoProfesor->materia->nombre }}</h1>
         <button type="button" wire:click="hoy" class="bg-primario text-white hover:bg-primario/90">Tomar asistencia de hoy</button>

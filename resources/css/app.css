@@ -42,8 +42,9 @@
  * se ven prolijas igual. Cualquier clase de Tailwind en un elemento tiene prioridad sobre esto.
  */
 @layer base {
-    h1 { @apply font-titulos text-2xl font-semibold text-primario mb-4; }
-    h2 { @apply font-titulos text-xl font-semibold text-primario mt-8 mb-3; }
+    /* #156: títulos de las pantallas con la jerarquía de la base (#154): más firmes y en el azul oscuro */
+    h1 { @apply font-titulos text-2xl md:text-3xl font-bold tracking-[-0.01em] text-navy-900 mb-4; }
+    h2 { @apply font-titulos text-xl font-bold text-navy-900 mt-8 mb-3; }
     h3 { @apply font-semibold text-lg mt-6 mb-2; }
 
     label { @apply font-semibold; }
