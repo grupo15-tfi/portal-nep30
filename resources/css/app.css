@@ -30,6 +30,10 @@
     --color-red-100: #FBE4E1;
     --color-navy-900: #16225E;      /* pie del sitio */
 
+    /* #154: fondo suave de secciones y el tono del secundario al pasar el mouse */
+    --color-fondo-suave: #F5F8FD;
+    --color-primario-suave: #D3E2F7;
+
     --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
     --font-titulos: 'Fraunces', ui-serif, Georgia, serif;
 }
@@ -95,6 +99,40 @@
     button, summary, .boton, .tarjeta-enlace { transition: none; }
     button:active, summary:active, .boton:active, .tarjeta-enlace:active { scale: none; }
     button[data-loading]::before, form[data-loading] button[type='submit']::before { animation: none; border-right-color: currentColor; opacity: 0.6; }
+}
+
+/*
+ * #154: base de estilos comunes (sitio público y campus). Mismos colores y tipografías; cambia la forma.
+ * Se usan junto con .boton (#112), que agrega el efecto al apretar. Todo lo que se aprieta mide 44 px de alto o más.
+ *   Botones:  .boton .boton-principal | .boton .boton-secundario | .boton .boton-volver | .boton .boton-peligro
+ *   Tarjeta:  .tarjeta (sin borde fino: sombra suave y esquinas de 16 px)
+ *   Chips:    .chip + .chip-primario | .chip-exito | .chip-aviso | .chip-error (con .chip-punto, un punto de color)
+ *   Títulos:  .etiqueta (arriba, en mayúsculas) · .titulo-pagina · .subtitulo
+ */
+@layer components {
+    .boton-principal, .boton-secundario, .boton-volver, .boton-peligro {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border-0 px-5 font-bold no-underline;
+        line-height: 1.25;
+    }
+    .boton-principal { @apply bg-primario text-white hover:bg-navy-900 hover:text-white; }
+    .boton-secundario { @apply bg-primario-claro text-primario hover:bg-primario-suave hover:text-primario; }
+    .boton-peligro { @apply bg-transparent text-error hover:bg-error-claro hover:text-error; }
+    /* «Volver»: chico, con flecha; la flecha no se lee en voz alta (texto alternativo vacío) */
+    .boton-volver { @apply min-h-11 rounded-full border border-borde bg-white px-4 text-sm text-primario hover:bg-primario-claro hover:text-primario; }
+    .boton-volver::before { content: '←' / ''; font-size: 1.1em; }
+
+    .tarjeta { @apply rounded-2xl bg-white; box-shadow: 0 1px 2px rgb(22 34 94 / 0.06), 0 8px 24px rgb(22 34 94 / 0.08); }
+
+    .chip { @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold; }
+    .chip-primario { @apply bg-primario-claro text-primario; }
+    .chip-exito { @apply bg-exito-claro text-exito; }
+    .chip-aviso { @apply bg-amber-100 text-amber-700; }
+    .chip-error { @apply bg-error-claro text-error; }
+    .chip-punto::before { content: ''; @apply size-2 rounded-full bg-current; }
+
+    .etiqueta { @apply mb-2 text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-primario; }
+    .titulo-pagina { @apply mt-0 mb-3 font-titulos text-4xl font-bold leading-[1.08] tracking-[-0.02em] text-navy-900 md:text-5xl; }
+    .subtitulo { @apply mt-0 max-w-2xl text-lg leading-relaxed text-texto-suave; }
 }
 
 @layer base {
