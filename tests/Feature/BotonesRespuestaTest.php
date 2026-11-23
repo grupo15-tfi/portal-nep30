@@ -52,12 +52,13 @@ class BotonesRespuestaTest extends TestCase
 
     public function test_los_enlaces_con_forma_de_boton_tienen_la_clase_comun(): void
     {
+        // #155: los enlaces con forma de botón usan la base de #154 junto con .boton
         $this->get(route('inicio'))->assertOk()
-            ->assertSee('class="boton inline-flex', false)
-            ->assertSee('class="tarjeta-enlace', false);
+            ->assertSee('class="boton boton-principal"', false)
+            ->assertSee('class="boton boton-secundario"', false);
 
-        $this->get(route('login'))->assertOk();
-        $this->get(route('oferta.curso', 1))->assertOk()->assertSee('class="boton mt-2', false);
+        $this->get(route('login'))->assertOk()->assertSee('class="boton boton-volver"', false);
+        $this->get(route('oferta.curso', 1))->assertOk()->assertSee('class="boton boton-principal mt-2 w-full"', false);
     }
 
     public function test_login_olvide_y_restablecer_avisan_mientras_procesan(): void

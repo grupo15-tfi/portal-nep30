@@ -53,7 +53,7 @@
                 <h2 id="titulo-curso" class="mt-0 mb-1 text-xl font-semibold text-texto font-sans">{{ $cursoObj->plan }}</h2>
                 <p class="m-0 text-texto-suave">{{ $cursoObj->sede }}</p>
                 <p class="m-0 text-texto-suave">{{ $cursada }}</p>
-                <p class="mt-2 mb-3"><a href="{{ route('oferta') }}" class="font-semibold text-primario underline">Cambiar curso</a></p>
+                <p class="mt-3 mb-4"><a href="{{ route('oferta') }}" class="boton boton-volver">Cambiar curso</a></p>
 
                 @if ($sinCupo)
                     <div class="mb-3 rounded border-l-4 border-amber-700 bg-amber-100 p-3">

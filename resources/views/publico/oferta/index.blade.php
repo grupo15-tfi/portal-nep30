@@ -3,26 +3,27 @@
 @section('titulo', 'Oferta educativa')
 
 @section('contenido')
-    <h1 class="font-titulos text-3xl md:text-4xl font-semibold text-primario mb-2">Oferta educativa</h1>
-    <p class="max-w-3xl text-lg mb-6">
+    <p class="etiqueta">Formación profesional · Terminalidad primaria</p>
+    <h1 class="titulo-pagina">Oferta educativa</h1>
+    <p class="subtitulo mb-8">
         Formación profesional, capacitación laboral y terminalidad primaria para jóvenes y adultos. Elegí la sede que te quede más cerca y el turno que te sirva.
     </p>
 
-    {{-- Filtro por sede: formulario GET, funciona sin JavaScript --}}
-    <form method="GET" action="{{ route('oferta') }}" class="rounded-lg border border-borde p-4 mb-4 flex flex-col sm:flex-row sm:items-end gap-3">
-        <div class="flex flex-col gap-1 flex-1 max-w-md mb-0">
-            <label for="sede" class="font-semibold">Sede</label>
-            <select id="sede" name="sede" class="rounded border border-gray-500 bg-white px-3 py-2 w-full">
-                <option value="">Todas las sedes</option>
-                @foreach ($sedes as $sede)
-                    <option value="{{ $sede->sede_id }}" @selected($sedeId == $sede->sede_id)>{{ $sede->sede }} ({{ $sede->localidad }})</option>
-                @endforeach
-            </select>
-        </div>
-        <button type="submit" class="px-5 py-2">Filtrar</button>
-    </form>
+    {{-- #155: filtro por sede con chips. Son enlaces GET (?sede=ID): funcionan sin JavaScript y sin botón «Filtrar». --}}
+    <nav aria-label="Filtrar por sede" class="mb-4 flex flex-wrap gap-2">
+        <a href="{{ route('oferta') }}" @if (! $sedeId) aria-current="true" @endif
+           @class(['boton inline-flex min-h-11 items-center rounded-full border-2 px-4 font-bold no-underline',
+                   'border-primario bg-primario text-white hover:text-white' => ! $sedeId,
+                   'border-borde bg-white text-texto hover:border-primario hover:text-primario' => $sedeId])>Todas las sedes</a>
+        @foreach ($sedes as $sede)
+            <a href="{{ route('oferta', ['sede' => $sede->sede_id]) }}" @if ($sedeId == $sede->sede_id) aria-current="true" @endif
+               @class(['boton inline-flex min-h-11 items-center rounded-full border-2 px-4 font-bold no-underline',
+                       'border-primario bg-primario text-white hover:text-white' => $sedeId == $sede->sede_id,
+                       'border-borde bg-white text-texto hover:border-primario hover:text-primario' => $sedeId != $sede->sede_id])>{{ $sede->sede }}<span class="sr-only"> ({{ $sede->localidad }})</span></a>
+        @endforeach
+    </nav>
 
-    <p role="status" class="text-texto-suave mb-6">
+    <p role="status" class="text-texto-suave mb-8">
         @if ($total === 0)
             Todavía no hay cursos con inscripción abierta.
         @else
@@ -33,9 +34,9 @@
 
     @foreach ($porSede as $cursos)
         <section aria-labelledby="sede-{{ $cursos->first()->sede_id }}" class="mb-10">
-            <h2 id="sede-{{ $cursos->first()->sede_id }}" class="font-titulos text-2xl font-semibold text-primario mt-0 mb-0">{{ $cursos->first()->sede }}</h2>
-            <p class="text-texto-suave mb-4">{{ $cursos->first()->localidad }}</p>
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <h2 id="sede-{{ $cursos->first()->sede_id }}" class="mt-0 mb-0 font-titulos text-2xl font-bold tracking-[-0.01em] text-navy-900 md:text-3xl">{{ $cursos->first()->sede }}</h2>
+            <p class="mb-5 text-texto-suave">{{ $cursos->first()->localidad }}</p>
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($cursos as $curso)
                     <x-oferta.tarjeta :curso="$curso" />
                 @endforeach
@@ -44,10 +45,10 @@
     @endforeach
 
     {{-- Próximas fechas del calendario académico --}}
-    <section aria-labelledby="titulo-fechas" class="border-t border-borde pt-8">
-        <div class="flex flex-wrap items-baseline justify-between gap-3 mb-4">
-            <h2 id="titulo-fechas" class="font-titulos text-2xl font-semibold text-primario m-0">Próximas fechas</h2>
-            <a href="{{ route('calendario') }}" class="text-primario underline">Ver el calendario académico</a>
+    <section aria-labelledby="titulo-fechas" class="rounded-3xl bg-fondo-suave p-5 md:p-8">
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h2 id="titulo-fechas" class="m-0 font-titulos text-2xl font-bold text-navy-900 md:text-3xl">Próximas fechas</h2>
+            <a href="{{ route('calendario') }}" class="boton boton-secundario bg-white">Ver el calendario académico <svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
         @if ($proximos->isEmpty())
             <p class="text-texto-suave">No hay fechas próximas cargadas.</p>
