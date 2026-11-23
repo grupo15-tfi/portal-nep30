@@ -18,7 +18,7 @@
             @error('password') <p role="alert" class="text-error">{{ $message }}</p> @enderror
         </div>
 
-        <button type="submit" class="rounded bg-primario text-white px-4 py-2 font-semibold"
+        <button type="submit" class="boton boton-principal w-full"
                 wire:loading.attr="disabled" wire:target="ingresar">
             <span wire:loading.remove wire:target="ingresar">Ingresar</span>
             <span wire:loading wire:target="ingresar">Ingresando…</span>
@@ -26,7 +26,7 @@
 
         {{-- Aparece solo cuando exista la ruta de recuperación (#15) --}}
         @if (Route::has('password.request'))
-            <p class="text-center"><a href="{{ route('password.request') }}" class="text-primario underline">¿Olvidaste tu contraseña?</a></p>
+            <p class="text-center"><a href="{{ route('password.request') }}" class="inline-flex min-h-11 items-center font-semibold text-primario no-underline hover:underline">¿Olvidaste tu contraseña?</a></p>
         @endif
     </form>
 </div>

@@ -10,9 +10,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="min-h-screen bg-primario-claro/60 text-texto font-sans text-base flex items-center justify-center px-4 py-10">
-    <main class="w-full max-w-sm rounded bg-white p-6 shadow">
-        <h1 class="font-titulos text-2xl font-semibold text-primario text-center mb-6">Elegí tu contraseña</h1>
+<body class="min-h-screen bg-fondo-suave text-texto font-sans text-base flex items-center justify-center px-4 py-10">
+    {{-- #155: tarjeta de la base, centrada, con el sello arriba --}}
+    <main class="tarjeta w-full max-w-sm rounded-3xl p-6 sm:p-8">
+        <img src="{{ asset('img/sello.png') }}" alt="Sello del N.E.P. y F.P. N.º 30" width="64" height="64" class="mx-auto mb-3 size-16">
+        <h1 class="mb-6 text-center font-titulos text-2xl font-bold tracking-[-0.01em] text-navy-900">Elegí tu contraseña</h1>
         <livewire:auth.restablecer-contrasena :token="$token" />
     </main>
 </body>

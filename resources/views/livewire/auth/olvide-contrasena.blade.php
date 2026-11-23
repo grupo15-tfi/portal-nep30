@@ -13,12 +13,12 @@
             @error('email') <p role="alert" class="text-error">{{ $message }}</p> @enderror
         </div>
 
-        <button type="submit" class="rounded bg-primario text-white px-4 py-2 font-semibold disabled:opacity-60 disabled:cursor-wait"
+        <button type="submit" class="boton boton-principal w-full disabled:opacity-60 disabled:cursor-wait"
                 wire:loading.attr="disabled" wire:target="enviar">
             <span wire:loading.remove wire:target="enviar">Enviar enlace</span>
             <span wire:loading wire:target="enviar">Enviando…</span>
         </button>
 
-        <p class="text-center"><a href="{{ route('login') }}" class="text-primario underline">« Volver a ingresar</a></p>
+        <p class="text-center"><a href="{{ route('login') }}" class="boton boton-volver">Volver a ingresar</a></p>
     </form>
 </div>

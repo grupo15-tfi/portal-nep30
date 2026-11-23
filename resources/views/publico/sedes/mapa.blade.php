@@ -10,8 +10,8 @@
 @php use App\Http\Controllers\SedesMapaController; @endphp
 
 @section('contenido')
-    <h1 class="font-titulos text-3xl md:text-4xl font-semibold text-primario mb-2">Sedes y anexos</h1>
-    <p class="max-w-3xl text-lg mb-6">
+    <h1 class="titulo-pagina">Sedes y anexos</h1>
+    <p class="subtitulo mb-8">
         La sede central funciona en la E.P.E.P. N.º 57 del barrio Luján y hay anexos en distintos barrios de Formosa.
         Encontrá el que te quede más cerca.
     </p>
@@ -25,7 +25,7 @@
 
         <div class="flex flex-col gap-4 min-w-0">
             {{-- Buscar la sede más cercana: primero la ubicación del celular, si no, el domicilio --}}
-            <section aria-labelledby="titulo-buscar" class="rounded-lg border border-borde bg-white p-4 md:p-5">
+            <section aria-labelledby="titulo-buscar" class="tarjeta p-5 md:p-6">
                 <h2 id="titulo-buscar" class="text-xl font-semibold mt-0 mb-1">¿Qué sede te queda más cerca?</h2>
                 <p class="text-texto-suave text-sm mb-4">Usamos tu ubicación o tu dirección solo para calcular la distancia. No la guardamos.</p>
 
@@ -64,7 +64,7 @@
                 <h2 id="titulo-lista" class="sr-only">Lista de sedes</h2>
                 <ol id="lista-sedes" class="flex flex-col gap-3 list-none p-0 m-0">
                     @foreach ($sedes as $sede)
-                        <li data-sede-id="{{ $sede->id }}" class="sede rounded-lg border border-borde bg-white p-4">
+                        <li data-sede-id="{{ $sede->id }}" class="sede tarjeta p-5">
                             <p class="sede-cercana-etiqueta hidden text-sm font-bold uppercase tracking-wide text-exito mb-1">Tu sede más cercana</p>
                             <div class="flex items-start justify-between gap-3">
                                 <h3 class="text-lg font-semibold leading-snug m-0">{{ $sede->nombre }}</h3>
@@ -78,14 +78,14 @@
                                 {{ count($sede->cursos) === 1 ? '1 curso este año' : count($sede->cursos).' cursos este año' }}
                             </p>
                             <p data-distancia class="m-0 font-semibold text-primario empty:hidden"></p>
-                            <p class="mt-2 mb-0 flex flex-wrap gap-x-4 gap-y-1">
-                                <a href="{{ route('oferta', ['sede' => $sede->id]) }}" class="font-semibold text-primario underline">Ver cursos de esta sede</a>
+                            <p class="mt-3 mb-0 flex flex-wrap gap-2">
+                                <a href="{{ route('oferta', ['sede' => $sede->id]) }}" class="boton boton-secundario">Ver cursos de esta sede</a>
                                 <a href="https://www.google.com/maps/dir/?api=1&amp;destination={{ $sede->latitud }},{{ $sede->longitud }}"
-                                   target="_blank" rel="noopener" class="font-semibold text-primario underline">
+                                   target="_blank" rel="noopener" class="boton boton-secundario">
                                     Cómo llegar<span class="sr-only"> (se abre en otra pestaña)</span>
                                 </a>
                                 <button type="button" data-ver-en-mapa hidden
-                                        class="border-0 bg-transparent p-0 font-semibold text-primario underline hover:bg-transparent">Ver en el mapa</button>
+                                        class="boton boton-secundario">Ver en el mapa</button>
                             </p>
                         </li>
                     @endforeach
