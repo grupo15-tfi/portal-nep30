@@ -33,9 +33,10 @@
                         <td data-etiqueta="Horario" class="md:whitespace-nowrap">{{ MisMateriasController::horario($a->curso) }}</td>
                         <td data-etiqueta="Acciones">
                             {{-- HU11 (#91) y HU13 (#94) --}}
-                            <span class="flex flex-wrap gap-x-4">
-                                <a href="{{ route('profesor.notas', $a) }}" class="text-primario underline">Notas<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
-                                <a href="{{ route('profesor.asistencia', $a) }}" class="text-primario underline">Asistencia<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
+                            {{-- #156: botones de verdad en vez de enlaces subrayados --}}
+                            <span class="flex flex-wrap gap-2 lg:flex-nowrap">
+                                <a href="{{ route('profesor.notas', $a) }}" class="boton boton-secundario px-4 text-sm">Notas<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
+                                <a href="{{ route('profesor.asistencia', $a) }}" class="boton boton-secundario px-4 text-sm">Asistencia<span class="sr-only"> de {{ $a->materia->nombre }}</span></a>
                             </span>
                         </td>
                     </tr>

@@ -1,6 +1,6 @@
 @php use App\Livewire\Profesor\Notas; @endphp
 <div>
-    <p class="mb-2"><a href="{{ route('profesor.materias') }}" class="text-primario underline">« Mis materias</a></p>
+    <p class="mb-4"><a href="{{ route('profesor.materias') }}" class="boton boton-volver">Mis materias</a></p>
     <h1>Notas · {{ $cursoProfesor->materia->nombre }}</h1>
     <p class="text-texto-suave">
         {{ $cursoProfesor->curso->planEstudio->nombre }} · {{ $cursoProfesor->curso->sede->nombre }} · turno {{ $cursoProfesor->curso->turno }}.

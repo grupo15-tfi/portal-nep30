@@ -1,17 +1,18 @@
 <div>
     <h1>Alumnos</h1>
-    <p class="text-texto-suave">Alumnos inscriptos en cada curso. Las altas se hacen desde <a href="{{ route('admin.preinscripciones') }}" class="text-primario underline">Preinscripciones</a>.</p>
+    <p class="mb-6 text-texto-suave">Alumnos inscriptos en cada curso. Las altas se hacen desde <a href="{{ route('admin.preinscripciones') }}" class="text-primario underline">Preinscripciones</a>.</p>
 
     @if ($aviso)
         <p role="status" class="rounded border-l-4 border-exito bg-exito-claro px-4 py-3">{{ $aviso }}</p>
     @endif
 
-    <div class="mb-4 flex flex-wrap items-end gap-4">
-        <div class="mb-0 w-full max-w-sm">
+    {{-- #156: los tres filtros en una misma fila (en el celular, uno abajo del otro) --}}
+    <div class="mb-6 grid items-end gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.5fr)_minmax(0,0.8fr)]">
+        <div class="mb-0 w-full">
             <label for="buscar">Buscar por DNI o apellido</label>
             <input id="buscar" type="search" wire:model.live.debounce.300ms="buscar" placeholder="Ej.: 25123456 o Gómez">
         </div>
-        <div class="mb-0 w-full max-w-md">
+        <div class="mb-0 w-full">
             <label for="curso">Curso</label>
             <select id="curso" wire:model.live="cursoId">
                 <option value="">Todos los cursos</option>
@@ -20,7 +21,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="mb-0 w-full max-w-48">
+        <div class="mb-0 w-full">
             <label for="estado">Estado</label>
             <select id="estado" wire:model.live="estado">
                 <option value="">Todos</option>
@@ -68,17 +69,18 @@
                             </div>
                         </td>
                         <td data-etiqueta="Acciones">
-                            <div class="flex flex-wrap items-center gap-2">
+                            {{-- #156: acciones lado a lado; «Dar de baja» discreto, porque es la acción peligrosa --}}
+                            <div class="flex flex-wrap items-center gap-2 xl:flex-nowrap">
                                 {{-- HU17 (#127): el PDF lo genera #126; el botón aparece cuando existe su ruta --}}
                                 @if (\Illuminate\Support\Facades\Route::has('admin.alumnos.historial'))
                                     <a href="{{ route('admin.alumnos.historial', $inscripcion) }}"
-                                       class="boton inline-flex items-center rounded border border-primario px-3 py-1.5 font-semibold text-primario no-underline hover:bg-primario-claro">
+                                       class="boton boton-secundario whitespace-nowrap px-4 text-sm">
                                         Historial (PDF)<span class="sr-only">: {{ $inscripcion->alumno->nombreCompleto() }}</span>
                                     </a>
                                 @endif
                                 @if ($inscripcion->estado === 'activa')
                                     <button type="button" wire:click="abrirBaja({{ $inscripcion->id }})"
-                                            class="border-error text-error hover:bg-error-claro">
+                                            class="boton boton-peligro whitespace-nowrap px-3 text-sm">
                                         Dar de baja<span class="sr-only">: {{ $inscripcion->alumno->nombreCompleto() }}</span>
                                     </button>
                                 @endif
